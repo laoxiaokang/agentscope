@@ -1,0 +1,13 @@
+{
+  "skills_dir_mtime": 1784596950.0480404,
+  "skills": {
+    "dws": {
+      "hash": "48906dec3b8065b6b98c8bc9704212e42860bd174c9a4db44d288c05ab000d41",
+      "skill_name": "dws"
+    },
+    "ecology9-workflow": {
+      "hash": "3fb739eaea15fe95104725bcc0a03c692fabba3e953ac947b4f9dfce8cf16281",
+      "skill_name": "ecology9-workflow"
+    }
+  }
+}

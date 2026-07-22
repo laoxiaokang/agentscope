@@ -2,9 +2,10 @@
 """Test cases for :class:`LocalBackend` and the backend helpers.
 
 Exercises the three abstract primitives (``exec_shell``, ``read_file``,
-``write_file``) plus the derived filesystem helpers (``file_exists``,
-``is_dir``, ``list_dir``, ``stat_mtime``, ``delete_path``) of the
-host-local backend, and the module-level ``normalize_newlines`` helper.
+``write_file``), native command-line execution, and the derived filesystem
+helpers (``file_exists``, ``is_dir``, ``list_dir``, ``stat_mtime``,
+``delete_path``) of the host-local backend, plus the module-level
+``normalize_newlines`` helper.
 
 ``LocalBackend`` is designed to run on every platform (it spawns
 programs from an argv list without a shell and implements the
@@ -14,6 +15,7 @@ rely on a POSIX shell / POSIX-only utilities are skipped on Windows.
 """
 
 import os
+import shlex
 import sys
 import tempfile
 import unittest
@@ -115,6 +117,41 @@ class TestLocalBackendExec(IsolatedAsyncioTestCase):
                 os.path.realpath(result.stdout.decode().strip()),
                 os.path.realpath(tmp),
             )
+
+    async def test_command_line_preserves_quoted_script_path(self) -> None:
+        """Shell execution preserves quoted executable and script paths.
+
+        This covers the Windows regression where routing a full command
+        through ``create_subprocess_exec("cmd", "/c", command)`` kept the
+        inner quotes as literal filename characters.
+        """
+        with tempfile.TemporaryDirectory() as tmp:
+            script_dir = os.path.join(tmp, "directory with spaces")
+            os.makedirs(script_dir)
+            script_path = os.path.join(script_dir, "script with spaces.py")
+            await self.backend.write_file(
+                script_path,
+                b"print('quoted path works')\n",
+            )
+
+            if _IS_WINDOWS:
+                command = f'"{sys.executable}" "{script_path}"'
+            else:
+                command = (
+                    f"{shlex.quote(sys.executable)} "
+                    f"{shlex.quote(script_path)}"
+                )
+
+            result = await self.backend.exec_command_line(
+                command,
+                cwd=tmp,
+            )
+
+        self.assertTrue(result.ok(), result.stderr.decode(errors="replace"))
+        self.assertEqual(
+            result.stdout.decode().strip(),
+            "quoted path works",
+        )
 
     async def test_missing_executable_returns_127(self) -> None:
         """An unspawnable executable yields exit code 127 (not an exception).

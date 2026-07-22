@@ -1,0 +1,125 @@
+## 1. 接口描述
+
+接口请求域名： lke.tencentcloudapi.com 。
+
+录入问答
+知识库相关背景知识介绍
+“知识库检索范围”文档：https://cloud.tencent.com/document/product/1759/112704
+“标签”文档：https://cloud.tencent.com/document/product/1759/112956
+
+默认接口请求频率限制：100次/秒。
+
+<div class="rno-api-explorer">
+    <div class="rno-api-explorer-inner">
+        <div class="rno-api-explorer-hd">
+            <div class="rno-api-explorer-title">
+                推荐使用 API Explorer
+            </div>
+            <a href="https://console.cloud.tencent.com/api/explorer?Product=lke&Version=2023-11-30&Action=CreateQA" class="rno-api-explorer-btn" hotrep="doc.api.explorerbtn"><i class="rno-icon-explorer"></i>点击调试</a>
+        </div>
+        <div class="rno-api-explorer-body">
+            <div class="rno-api-explorer-cont">
+                API Explorer 提供了在线调用、签名验证、SDK 代码生成和快速检索接口等能力。您可查看每次调用的请求内容和返回结果以及自动生成 SDK 调用示例。
+            </div>
+        </div>
+    </div>
+</div>
+
+## 2. 输入参数
+
+以下请求参数列表仅列出了接口请求参数和部分公共参数，完整公共参数列表见 [公共请求参数](/document/api/1759/105108)。
+
+| 参数名称 | 必选 | 类型 | 描述 |
+|---------|---------|---------|---------|
+| Action | 是 | String | [公共参数](/document/api/1759/105108)，本接口取值：CreateQA。 |
+| Version | 是 | String | [公共参数](/document/api/1759/105108)，本接口取值：2023-11-30。 |
+| Region | 是 | String | [公共参数](/document/api/1759/105108)，详见产品支持的 [地域列表](/document/api/1759/105108#.E5.9C.B0.E5.9F.9F.E5.88.97.E8.A1.A8)。 |
+| BotBizId | 是 | String | 应用ID<br/>若要操作共享知识库，传KnowledgeBizId<br/>示例值：1963543972205658048 |
+| Question | 是 | String | 问题<br/>示例值：你是谁 |
+| Answer | 是 | String | 答案<br/>示例值：我是AI小助手 |
+| AttrRange | 是 | Integer | 标签适用范围 1：全部，2：按条件<br/>示例值：1 |
+| CustomParam | 否 | String | 自定义参数<br/>示例值：{"key":"CustomParam"} |
+| AttrLabels.N | 否 | Array of [AttrLabelRefer](/document/api/1759/105104#AttrLabelRefer) | 标签引用 |
+| DocBizId | 否 | String | 文档ID<br/>示例值：1963543972205658048 |
+| CateBizId | 否 | String | 分类ID<br/>示例值：1963543972205658048 |
+| ExpireStart | 否 | String | 有效开始时间，单位是unix时间戳。默认值为0，表示问答为永久有效.<br/>示例值：1766038604 |
+| ExpireEnd | 否 | String | 有效结束时间，unix时间戳，0代表永久有效<br/>示例值：1766038604 |
+| SimilarQuestions.N | 否 | Array of String | 相似问内容<br/>示例值：["ques"] |
+| QuestionDesc | 否 | String | 问题描述<br/>示例值：desc |
+| EnableScope | 否 | Integer | 问答生效域: 1-不生效；2-仅开发域生效；3-仅发布域生效；4-开发域和发布域均生效<br/>默认值：应用内默认知识库为2，共享知识库为4。<br/>示例值：1 |
+
+## 3. 输出参数
+
+| 参数名称 | 类型 | 描述 |
+|---------|---------|---------|
+| QaBizId | String | 问答ID<br/>示例值：1963543972205658048|
+| RequestId | String | 唯一请求 ID，由服务端生成，每次请求都会返回（若请求因其他原因未能抵达服务端，则该次请求不会获得 RequestId）。定位问题时需要提供该次请求的 RequestId。|
+
+## 4. 示例
+
+### 示例1 创建问答
+
+创建问答
+
+#### 输入示例
+
+```
+POST / HTTP/1.1
+Host: lke.tencentcloudapi.com
+Content-Type: application/json
+X-TC-Action: CreateQA
+<公共请求参数>
+
+{
+    "BotBizId": "1727231073371148288",
+    "Question": "你是谁",
+    "Answer": "我是AI小助手",
+    "AttrRange": 1
+}
+```
+
+#### 输出示例
+
+```json
+{
+    "Response": {
+        "QaBizId": "17272310733712383",
+        "RequestId": "eefbbf48-673a-4fe3-bc0f-5b45693b8962"
+    }
+}
+```
+
+
+## 5. 开发者资源
+
+### 腾讯云 API 平台
+
+[腾讯云 API 平台](https://cloud.tencent.com/api) 是综合 API 文档、错误码、API Explorer 及 SDK 等资源的统一查询平台，方便您从同一入口查询及使用腾讯云提供的所有 API 服务。
+
+### API Inspector
+
+用户可通过 [API Inspector](https://cloud.tencent.com/document/product/1278/49361) 查看控制台每一步操作关联的 API 调用情况，并自动生成各语言版本的 API 代码，也可前往 [API Explorer](https://cloud.tencent.com/document/product/1278/46697) 进行在线调试。
+
+### SDK
+
+云 API 3.0 提供了配套的开发工具集（SDK），支持多种编程语言，能更方便的调用 API。
+* Tencent Cloud SDK 3.0 for Python: [CNB](https://cnb.cool/tencent/cloud/api/sdk/tencentcloud-sdk-python/-/blob/master/tencentcloud/lke/v20231130/lke_client.py), [GitHub](https://github.com/TencentCloud/tencentcloud-sdk-python/blob/master/tencentcloud/lke/v20231130/lke_client.py), [Gitee](https://gitee.com/TencentCloud/tencentcloud-sdk-python/blob/master/tencentcloud/lke/v20231130/lke_client.py)
+* Tencent Cloud SDK 3.0 for Java: [CNB](https://cnb.cool/tencent/cloud/api/sdk/tencentcloud-sdk-java/-/blob/master/src/main/java/com/tencentcloudapi/lke/v20231130/LkeClient.java), [GitHub](https://github.com/TencentCloud/tencentcloud-sdk-java/blob/master/src/main/java/com/tencentcloudapi/lke/v20231130/LkeClient.java), [Gitee](https://gitee.com/TencentCloud/tencentcloud-sdk-java/blob/master/src/main/java/com/tencentcloudapi/lke/v20231130/LkeClient.java)
+* Tencent Cloud SDK 3.0 for PHP: [CNB](https://cnb.cool/tencent/cloud/api/sdk/tencentcloud-sdk-php/-/blob/master/src/TencentCloud/Lke/V20231130/LkeClient.php), [GitHub](https://github.com/TencentCloud/tencentcloud-sdk-php/blob/master/src/TencentCloud/Lke/V20231130/LkeClient.php), [Gitee](https://gitee.com/TencentCloud/tencentcloud-sdk-php/blob/master/src/TencentCloud/Lke/V20231130/LkeClient.php)
+* Tencent Cloud SDK 3.0 for Go: [CNB](https://cnb.cool/tencent/cloud/api/sdk/tencentcloud-sdk-go/-/blob/master/tencentcloud/lke/v20231130/client.go), [GitHub](https://github.com/TencentCloud/tencentcloud-sdk-go/blob/master/tencentcloud/lke/v20231130/client.go), [Gitee](https://gitee.com/TencentCloud/tencentcloud-sdk-go/blob/master/tencentcloud/lke/v20231130/client.go)
+* Tencent Cloud SDK 3.0 for Node.js: [CNB](https://cnb.cool/tencent/cloud/api/sdk/tencentcloud-sdk-nodejs/-/blob/master/src/services/lke/v20231130/lke_client.ts), [GitHub](https://github.com/TencentCloud/tencentcloud-sdk-nodejs/blob/master/src/services/lke/v20231130/lke_client.ts), [Gitee](https://gitee.com/TencentCloud/tencentcloud-sdk-nodejs/blob/master/src/services/lke/v20231130/lke_client.ts)
+* Tencent Cloud SDK 3.0 for .NET: [CNB](https://cnb.cool/tencent/cloud/api/sdk/tencentcloud-sdk-dotnet/-/blob/master/TencentCloud/Lke/V20231130/LkeClient.cs), [GitHub](https://github.com/TencentCloud/tencentcloud-sdk-dotnet/blob/master/TencentCloud/Lke/V20231130/LkeClient.cs), [Gitee](https://gitee.com/TencentCloud/tencentcloud-sdk-dotnet/blob/master/TencentCloud/Lke/V20231130/LkeClient.cs)
+* Tencent Cloud SDK 3.0 for C++: [CNB](https://cnb.cool/tencent/cloud/api/sdk/tencentcloud-sdk-cpp/-/blob/master/lke/src/v20231130/LkeClient.cpp), [GitHub](https://github.com/TencentCloud/tencentcloud-sdk-cpp/blob/master/lke/src/v20231130/LkeClient.cpp), [Gitee](https://gitee.com/TencentCloud/tencentcloud-sdk-cpp/blob/master/lke/src/v20231130/LkeClient.cpp)
+* Tencent Cloud SDK 3.0 for Ruby: [CNB](https://cnb.cool/tencent/cloud/api/sdk/tencentcloud-sdk-ruby/-/blob/master/tencentcloud-sdk-lke/lib/v20231130/client.rb), [GitHub](https://github.com/TencentCloud/tencentcloud-sdk-ruby/blob/master/tencentcloud-sdk-lke/lib/v20231130/client.rb), [Gitee](https://gitee.com/TencentCloud/tencentcloud-sdk-ruby/blob/master/tencentcloud-sdk-lke/lib/v20231130/client.rb)
+
+### 命令行工具
+
+* [Tencent Cloud CLI 3.0](https://cloud.tencent.com/document/product/440/6176)
+
+## 6. 错误码
+
+以下仅列出了接口业务逻辑相关的错误码，其他错误码详见 [公共错误码](/document/api/1759/105113#.E5.85.AC.E5.85.B1.E9.94.99.E8.AF.AF.E7.A0.81)。
+
+| 错误码 | 描述 |
+|---------|---------|
+| FailedOperation | 操作失败。 |

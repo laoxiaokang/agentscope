@@ -13,7 +13,37 @@ from agentscope.app.storage import RedisStorage
 from agentscope.app.workspace_manager import LocalWorkspaceManager
 from agentscope.mcp import MCPClient, StdioMCPConfig, HttpMCPConfig
 from agentscope.permission import PermissionContext, PermissionMode
-from agentscope.rag import QdrantStore
+from agentscope.rag import MilvusLiteStore
+
+
+_DEFAULT_MILVUS_URI = (
+    "https://in03-27c7c2ecead182f.serverless.ali-cn-hangzhou."
+    "cloud.zilliz.com.cn"
+)
+
+
+def _build_vector_store() -> MilvusLiteStore:
+    """Build the persistent Zilliz Cloud store from the environment."""
+    token = os.getenv("MILVUS_TOKEN", "").strip()
+    if not token:
+        raise RuntimeError(
+            "MILVUS_TOKEN is required to connect to the configured Milvus "
+            "endpoint. Set it before starting the agent service.",
+        )
+
+    uri = os.getenv("MILVUS_URI", _DEFAULT_MILVUS_URI).strip()
+    if not uri:
+        raise RuntimeError("MILVUS_URI must not be empty.")
+
+    return MilvusLiteStore(
+        uri=uri,
+        metric_type="COSINE",
+        client_kwargs={
+            "token": token,
+            "db_name": os.getenv("MILVUS_DB_NAME", "default").strip()
+            or "default",
+        },
+    )
 
 default_mcps = [
     MCPClient(
@@ -34,16 +64,33 @@ if os.getenv("AMAP_API_KEY"):
                 url=f"https://mcp.amap.com/mcp?key="
                 f"{os.environ['AMAP_API_KEY']}",
             ),
-            is_stateful=False,
+            is_stateful=True,
+        ),
+    )
+
+if os.getenv("LUCKIN_MCP_TOKEN"):
+    default_mcps.append(
+        MCPClient(
+            name="my-coffee",
+            mcp_config=HttpMCPConfig(
+                url="https://gwmcp.lkcoffee.com/order/user/mcp",
+                headers={
+                    "Authorization": (
+                        f"Bearer {os.environ['LUCKIN_MCP_TOKEN']}"
+                    ),
+                },
+            ),
+            is_stateful=True,
         ),
     )
 
 storage = RedisStorage(
-    host="localhost",
+    host="172.19.10.26",
     port=6379,
+    password="sypm@123456"
 )
 
-vector_store = QdrantStore(location=":memory:")
+vector_store = _build_vector_store()
 
 app = create_app(
     storage=storage,
@@ -65,9 +112,8 @@ app = create_app(
         # The default MCP servers that will be added into the workspace
         default_mcps=default_mcps,
     ),
-    # Knowledge base feature — backed by an in-memory Qdrant store. The
-    # CollectionPerKbManager allocates one collection per knowledge base,
-    # so any embedding dimension is allowed.
+    # Each knowledge base gets its own collection in the configured Milvus
+    # store, so different embedding dimensions can coexist.
     knowledge_base_manager=CollectionPerKbManager(
         storage=storage,
         vector_store=vector_store,
@@ -106,7 +152,7 @@ the other team members. Any other output you produce is invisible to them, \
 so anything you want them to see MUST be sent through `TeamSay`.""",
             permission_context=PermissionContext(
                 # Read-only
-                mode=PermissionMode.EXPLORE,
+                mode=PermissionMode.BYPASS,
             ),
         ),
     ],

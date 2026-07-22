@@ -9,7 +9,8 @@ Every backend implements exactly **three** abstract primitives whose
 mechanism genuinely differs per environment:
 
 * :meth:`BackendBase.exec_shell` — run a program from an argv list
-  (no shell; callers needing shell features wrap with ``sh -c``).
+  (no shell; callers needing shell features use
+  :meth:`BackendBase.exec_command_line`).
 * :meth:`BackendBase.read_file` — read raw bytes.
 * :meth:`BackendBase.write_file` — write raw bytes.
 
@@ -22,8 +23,10 @@ backend.  A backend that has a cheaper native path (e.g.
 Concrete implementations:
 
 * :class:`LocalBackend` — default; uses ``asyncio`` subprocesses,
-  ``aiofiles``, and ``os.*`` for host-local I/O.  Injected automatically
-  when no explicit backend is given.
+  ``aiofiles``, and ``os.*`` for host-local I/O. Direct argv execution
+  uses ``create_subprocess_exec`` while complete command lines use the
+  host-native ``create_subprocess_shell``. Injected automatically when no
+  explicit backend is given.
 * ``DockerBackend`` — uses ``aiodocker`` exec / archive APIs.
 * ``E2BBackend`` — uses the E2B SDK ``commands`` / ``files`` APIs.
 
@@ -284,6 +287,44 @@ class BackendBase(ABC):
                 The captured exit code, stdout, and stderr.
         """
 
+    async def exec_command_line(
+        self,
+        command: str,
+        *,
+        cwd: str | None = None,
+        timeout: float | None = None,
+    ) -> ExecResult:
+        """Run a complete shell command line in the backend environment.
+
+        This is intentionally separate from :meth:`exec_shell`, whose
+        contract is an argv list with no shell interpretation.  Builtin
+        tools that expose shell semantics (currently :class:`Bash`) use
+        this method so each backend can choose the correct shell and
+        quoting rules for its own environment.
+
+        The base implementation targets POSIX-like backends.  The local
+        backend overrides it with a native subprocess shell so Windows
+        ``cmd.exe`` receives the command string without the nested-quote
+        corruption caused by passing ``cmd /c`` through an argv list.
+
+        Args:
+            command (`str`):
+                Complete shell command line to execute.
+            cwd (`str | None`, optional):
+                Working directory in the backend environment.
+            timeout (`float | None`, optional):
+                Maximum number of seconds to wait.
+
+        Returns:
+            `ExecResult`:
+                The captured exit code, stdout, and stderr.
+        """
+        return await self.exec_shell(
+            ["/bin/sh", "-c", command],
+            cwd=cwd,
+            timeout=timeout,
+        )
+
     @abstractmethod
     async def read_file(self, path: str) -> bytes:
         """Read the full contents of ``path`` as raw bytes.
@@ -500,7 +541,7 @@ def _subprocess_creation_kwargs() -> dict[str, Any]:
 
     Returns:
         `dict[str, Any]`:
-            Extra keyword arguments for ``create_subprocess_shell``.
+            Extra keyword arguments for the asyncio subprocess APIs.
             Empty on POSIX; on Windows it sets ``creationflags`` to
             suppress a console window.
     """
@@ -518,18 +559,38 @@ def _subprocess_creation_kwargs() -> dict[str, Any]:
     }
 
 
+async def _collect_process_result(
+    process: asyncio.subprocess.Process,
+    timeout: float | None,
+) -> ExecResult:
+    """Collect subprocess output with the backend timeout convention."""
+    try:
+        stdout, stderr = await asyncio.wait_for(
+            process.communicate(),
+            timeout=timeout,
+        )
+    except asyncio.TimeoutError:
+        process.kill()
+        await process.communicate()
+        return ExecResult(exit_code=-1, stdout=b"", stderr=b"timed out")
+
+    return ExecResult(
+        exit_code=process.returncode or 0,
+        stdout=stdout,
+        stderr=stderr,
+    )
+
+
 class LocalBackend(BackendBase):
     """Host-local :class:`BackendBase` implementation.
 
-    Uses ``asyncio.create_subprocess_exec``, ``aiofiles``, and the
-    ``os`` module.  This is the default backend injected when no
-    explicit one is given to a builtin tool.  Commands are spawned
-    directly from their argument vector (no shell), which avoids the
-    POSIX-vs-``cmd.exe`` quoting mismatch and makes the backend work on
-    Windows.  The derived filesystem helpers are overridden with native
-    ``os.*`` calls — faster and more robust than shelling out, and
-    portable to Windows where ``test`` / ``find`` / ``stat`` are
-    unavailable.
+    Uses asyncio subprocesses, ``aiofiles``, and the ``os`` module. This
+    is the default backend injected when no explicit one is given to a
+    builtin tool. Argv commands are spawned directly without a shell;
+    complete command lines use the host-native shell. The derived
+    filesystem helpers are overridden with native ``os.*`` calls — faster
+    and more robust than shelling out, and portable to Windows where
+    ``test`` / ``find`` / ``stat`` are unavailable.
     """
 
     # Use the host OS's path semantics (Windows or POSIX) instead of
@@ -589,21 +650,42 @@ class LocalBackend(BackendBase):
                 stderr=str(exc).encode("utf-8"),
             )
 
-        try:
-            stdout, stderr = await asyncio.wait_for(
-                process.communicate(),
-                timeout=timeout,
-            )
-        except asyncio.TimeoutError:
-            process.kill()
-            await process.communicate()
-            return ExecResult(exit_code=-1, stdout=b"", stderr=b"timed out")
+        return await _collect_process_result(process, timeout)
 
-        return ExecResult(
-            exit_code=process.returncode or 0,
-            stdout=stdout,
-            stderr=stderr,
-        )
+    async def exec_command_line(
+        self,
+        command: str,
+        *,
+        cwd: str | None = None,
+        timeout: float | None = None,
+    ) -> ExecResult:
+        """Run a command line through the host's native shell.
+
+        ``create_subprocess_shell`` is important on Windows here.  Passing
+        ``["cmd", "/c", command]`` to ``create_subprocess_exec`` causes
+        nested quotes in paths such as ``python "C:\\path with spaces\\x.py"``
+        to be preserved as literal characters by ``cmd.exe``.  The native
+        shell API builds the command line correctly for the host platform.
+        """
+        kwargs = _subprocess_creation_kwargs()
+        if cwd is not None:
+            kwargs["cwd"] = cwd
+
+        try:
+            process = await asyncio.create_subprocess_shell(
+                command,
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE,
+                **kwargs,
+            )
+        except (FileNotFoundError, NotADirectoryError, OSError) as exc:
+            return ExecResult(
+                exit_code=127,
+                stdout=b"",
+                stderr=str(exc).encode("utf-8"),
+            )
+
+        return await _collect_process_result(process, timeout)
 
     async def read_file(self, path: str) -> bytes:
         """Read a local file as raw bytes.

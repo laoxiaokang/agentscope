@@ -299,3 +299,12 @@ AgentScope 基于 Apache License 2.0 发布。
 <a href="https://github.com/agentscope-ai/agentscope/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=agentscope-ai/agentscope&max=999&columns=12&anon=1" />
 </a>
+
+
+
+
+
+$env:AMAP_API_KEY="68715d61ee4ae56be37493c9e771d36b";
+$env:LUCKIN_MCP_TOKEN = "91c3aaf883dc4fefbcb9b3cd88a2307b5mcpLUCKIN_MCP_AI";
+$env:MILVUS_TOKEN = "28bbb7654c0312052143ec2d339ffa7befbdcf73cf3c3042086bb08982ebefabd4b85237bfd90cc0b5ae0ec172eb214ab27a5c36";
+python main.py

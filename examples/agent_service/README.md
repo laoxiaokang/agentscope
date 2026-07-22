@@ -14,6 +14,8 @@ Details about the agent service please refer to the [tutorial](https://docs.agen
 - Python ≥ 3.11
 - Node.js ≥ 20 with `npx`
 - [optional] Gaode/AMap API key in `AMAP_API_KEY` (for the `amap` MCP)
+- Zilliz Cloud token in `MILVUS_TOKEN` for the configured knowledge-base
+  vector store
 
 ## Quickstart
 
@@ -45,8 +47,24 @@ Start the agent service:
 ```bash
 cd examples/agent_service
 
+export MILVUS_TOKEN="your-zilliz-token"
 python main.py
 ```
+
+On PowerShell, set the token without placing it in shell history:
+
+```powershell
+$env:MILVUS_TOKEN = [Net.NetworkCredential]::new(
+    "",
+    (Read-Host "Zilliz Token" -AsSecureString)
+).Password
+python main.py
+```
+
+`MILVUS_URI` optionally overrides the project cluster endpoint, and
+`MILVUS_DB_NAME` optionally selects a database (default: `default`). Install
+the Milvus dependencies with `uv pip install -e ".[milvuslite]"` when the
+full extra is not installed.
 
 Launch the Web UI in a separate terminal to experience a chat-style interface:
 

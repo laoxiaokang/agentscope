@@ -23,16 +23,17 @@ from ._backend import BackendBase
 
 
 class Bash(ToolBase):
-    """The bash tool."""
+    """Execute a command through the workspace's native shell."""
 
     name: str = "Bash"
     """The tool name presented to the agent."""
 
-    description: str = """Executes a bash command and returns its output.
+    description: str = """Executes a shell command and returns its output.
 
 The working directory persists between commands, but shell state does
-not. The shell environment is initialized from the user's profile
-(bash or zsh).
+not. POSIX workspaces use a ``/bin/sh``-compatible shell. Windows local
+workspaces use ``cmd.exe``; use Windows paths and commands there (for
+example ``dir`` instead of ``ls`` and ``python`` instead of ``python3``).
 
 IMPORTANT: Avoid using this tool to run `find`, `grep`, `cat`, `head`,
 `tail`, `sed`, `awk`, or `echo` commands, unless explicitly instructed
@@ -53,8 +54,8 @@ easier to review tool calls and give permission.
 
 # Instructions
  - If your command will create new directories or files, first use
-   this tool to run `ls` to verify the parent directory exists and is
-   the correct location.
+   the dedicated Glob tool to verify the parent directory exists and
+   is the correct location.
  - Always quote file paths that contain spaces with double quotes in
    your command (e.g., cd "path with spaces/file.txt")
  - Try to maintain your current working directory throughout the
@@ -103,7 +104,7 @@ easier to review tool calls and give permission.
         "properties": {
             "command": {
                 "type": "string",
-                "description": "The bash command to execute.",
+                "description": "The shell command to execute.",
             },
             "description": {
                 "type": "string",
@@ -701,17 +702,12 @@ easier to review tool calls and give permission.
 
         try:
             # ``command`` is a full shell command line (it may contain
-            # pipes, redirects, ``&&``, …), so wrap it in a shell — the
-            # backend primitive runs the argv directly without one. Pick
-            # the platform's native shell so the Windows experience that
-            # ``main`` had (commands interpreted by ``cmd.exe``) is
-            # preserved; POSIX hosts use ``/bin/sh``.
-            if os.name == "nt":
-                shell_command = ["cmd", "/c", command]
-            else:
-                shell_command = ["/bin/sh", "-c", command]
-            result = await self._backend.exec_shell(
-                shell_command,
+            # pipes, redirects, ``&&``, …). Let the active backend choose
+            # the shell and apply its native quoting rules. This is
+            # essential on Windows, where passing ``cmd /c`` as an argv
+            # list corrupts quoted script paths.
+            result = await self._backend.exec_command_line(
+                command,
                 cwd=self._cwd,
                 timeout=timeout_sec,
             )

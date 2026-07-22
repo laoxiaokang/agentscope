@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 
 import { sessionApi } from '../api';
 import type { SessionView, CreateSessionRequest, UpdateSessionRequest } from '../api';
+import { createSessionWithDefaultPermission } from './createSessionWithDefaultPermission.ts';
 
 /**
  * Manages session views for a given agent.
@@ -43,11 +44,8 @@ export function useSessions(agentId: string | null) {
 
 	/** Creates a new session and refreshes the list. */
 	const create = useCallback(
-		async (body: CreateSessionRequest) => {
-			const res = await sessionApi.create(body);
-			await refetch();
-			return res;
-		},
+		async (body: CreateSessionRequest) =>
+			createSessionWithDefaultPermission(sessionApi, body, refetch),
 		[refetch],
 	);
 

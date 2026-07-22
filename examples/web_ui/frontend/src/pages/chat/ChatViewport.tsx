@@ -3,7 +3,12 @@ import type { TaskContext } from '@agentscope-ai/agentscope/state';
 import { BookText, ChevronDown, Database, ListTodo, PanelRight, ShieldCheck } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-import type { ChatModelConfig, SessionKnowledgeConfig, TTSModelConfig } from '@/api';
+import type {
+	ChatModelConfig,
+	PermissionMode,
+	SessionKnowledgeConfig,
+	TTSModelConfig,
+} from '@/api';
 import { sessionApi } from '@/api';
 import MCPSvg from '@/assets/images/mcp.svg?react';
 import { ChatContent } from '@/components/chat/ChatContent.tsx';
@@ -40,6 +45,10 @@ import { useMessages } from '@/hooks/useMessages';
 import { useSessions } from '@/hooks/useSessions';
 import { useWorkspace } from '@/hooks/useWorkspace.ts';
 import { useTranslation } from '@/i18n/useI18n';
+import {
+	DEFAULT_FRONTEND_PERMISSION_MODE,
+	resolveFrontendPermissionMode,
+} from '@/lib/permissionDefaults.ts';
 
 interface ChatViewportProps {
 	/**
@@ -138,7 +147,9 @@ export function ChatViewport({ agentId, sessionId, onTeamUpdated }: ChatViewport
 	const [selectedTTSModel, setSelectedTTSModel] = useState<TTSModelConfig | null>(null);
 	const [selectedKnowledgeConfig, setSelectedKnowledgeConfig] =
 		useState<SessionKnowledgeConfig | null>(null);
-	const [selectedPermissionMode, setSelectedPermissionMode] = useState<string>('default');
+	const [selectedPermissionMode, setSelectedPermissionMode] = useState<PermissionMode>(
+		DEFAULT_FRONTEND_PERMISSION_MODE,
+	);
 	const [credentialOpen, setCredentialOpen] = useState(false);
 	const [credentialRefetchTrigger, setCredentialRefetchTrigger] = useState(0);
 	const [tasksContext, setTasksContext] = useState<TaskContext | null>(null);
@@ -454,8 +465,8 @@ export function ChatViewport({ agentId, sessionId, onTeamUpdated }: ChatViewport
 	useEffect(() => {
 		if (!view) return;
 		const mode = (view.session.state?.permission_context as Record<string, unknown>)
-			?.mode as string;
-		setSelectedPermissionMode(mode ?? 'default');
+			?.mode as PermissionMode | undefined;
+		setSelectedPermissionMode(resolveFrontendPermissionMode(mode));
 	}, [sessionId, view]);
 
 	/**
@@ -514,7 +525,7 @@ export function ChatViewport({ agentId, sessionId, onTeamUpdated }: ChatViewport
 	 *
 	 * @param mode - New permission mode (e.g. `default`, `explore`).
 	 */
-	const handlePermissionModeChange = async (mode: string) => {
+	const handlePermissionModeChange = async (mode: PermissionMode) => {
 		setSelectedPermissionMode(mode);
 		if (!sessionId || !agentId) return;
 		await sessionApi.update(sessionId, agentId, { permission_mode: mode });

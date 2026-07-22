@@ -1,0 +1,592 @@
+- generic [active] [ref=f2e1]:
+  - navigation [ref=f2e4]:
+    - generic [ref=f2e6]:
+      - link "腾讯云" [ref=f2e7] [cursor=pointer]:
+        - /url: https://cloud.tencent.com
+      - list [ref=f2e10]:
+        - listitem [ref=f2e11]:
+          - button "大模型" [ref=f2e12]
+        - listitem [ref=f2e14]:
+          - button "最新活动" [ref=f2e15] [cursor=pointer]
+        - listitem [ref=f2e16]:
+          - button "产品" [ref=f2e17] [cursor=pointer]
+        - listitem [ref=f2e18]:
+          - button "解决方案" [ref=f2e19] [cursor=pointer]
+        - listitem [ref=f2e20]:
+          - button "定价" [ref=f2e21] [cursor=pointer]
+        - listitem [ref=f2e22]:
+          - button "企业中心" [ref=f2e23] [cursor=pointer]
+        - listitem [ref=f2e24]:
+          - button "云市场" [ref=f2e25] [cursor=pointer]
+        - listitem [ref=f2e26]:
+          - button "开发者" [ref=f2e27] [cursor=pointer]
+        - listitem [ref=f2e28]:
+          - button "客户支持" [ref=f2e29] [cursor=pointer]
+        - listitem [ref=f2e30]:
+          - button "合作与生态" [ref=f2e31] [cursor=pointer]
+        - listitem [ref=f2e32]:
+          - button "了解腾讯云" [ref=f2e33] [cursor=pointer]
+      - generic [ref=f2e34]:
+        - generic [ref=f2e36] [cursor=pointer]:
+          - list [ref=f2e37]:
+            - listitem [ref=f2e38]: 对象存储
+          - button [ref=f2e39]
+        - generic [ref=f2e41]:
+          - generic [ref=f2e42]: 中国站
+          - generic [ref=f2e44]:
+            - link "文档" [ref=f2e45] [cursor=pointer]:
+              - /url: https://cloud.tencent.com/document/product
+            - link "备案" [ref=f2e46] [cursor=pointer]:
+              - /url: https://cloud.tencent.com/product/ba
+            - button "控制台" [ref=f2e47] [cursor=pointer]
+        - link "登录" [ref=f2e48] [cursor=pointer]:
+          - /url: javascript:void 0;
+        - link "免费注册" [ref=f2e49] [cursor=pointer]:
+          - /url: javascript:void 0;
+  - generic [ref=f2e50]:
+    - generic [ref=f2e54]:
+      - generic [ref=f2e56]:
+        - link "云 API" [ref=f2e59] [cursor=pointer]:
+          - /url: /document/product/1278
+        - generic [ref=f2e63]:
+          - button [ref=f2e64] [cursor=pointer]
+          - textbox "在目录中搜索" [ref=f2e67]
+        - generic [ref=f2e68]:
+          - link [ref=f2e70] [cursor=pointer]:
+            - /url: javascript:void 0;
+            - heading "公告" [level=4] [ref=f2e71]
+          - link [ref=f2e74] [cursor=pointer]:
+            - /url: javascript:void 0;
+            - heading "产品简介" [level=4] [ref=f2e75]
+          - link [ref=f2e78] [cursor=pointer]:
+            - /url: /document/product/1278/46660
+            - heading "购买指南" [level=4] [ref=f2e79]
+          - link [ref=f2e81] [cursor=pointer]:
+            - /url: javascript:void 0;
+            - heading "快速入门" [level=4] [ref=f2e82]
+          - generic [ref=f2e84]:
+            - link [ref=f2e85] [cursor=pointer]:
+              - /url: javascript:void 0;
+              - heading "开发指南" [level=4] [ref=f2e86]
+            - list [ref=f2e88]:
+              - listitem [ref=f2e89]:
+                - link "云 API 密钥安全方案推荐" [ref=f2e90] [cursor=pointer]:
+                  - /url: /document/product/1278/85305
+              - listitem [ref=f2e92]:
+                - link "C++ API" [ref=f2e93] [cursor=pointer]:
+                  - /url: /document/product/1278/46710
+              - listitem [ref=f2e95]:
+                - link ".NET API" [ref=f2e96] [cursor=pointer]:
+                  - /url: /document/product/1278/46711
+              - listitem [ref=f2e98]:
+                - link "GO API" [ref=f2e99] [cursor=pointer]:
+                  - /url: /document/product/1278/46712
+              - listitem [ref=f2e101]:
+                - link "Java API" [ref=f2e102] [cursor=pointer]:
+                  - /url: /document/product/1278/46713
+              - listitem [ref=f2e104]:
+                - link "Node.js API" [ref=f2e105] [cursor=pointer]:
+                  - /url: /document/product/1278/46714
+              - listitem [ref=f2e107]:
+                - link "PHP API" [ref=f2e108] [cursor=pointer]:
+                  - /url: /document/product/1278/46715
+              - listitem [ref=f2e110]:
+                - link "Python API" [ref=f2e111] [cursor=pointer]:
+                  - /url: /document/product/1278/46716
+              - listitem [ref=f2e113]:
+                - link "Postman自动计算签名方案说明" [ref=f2e114] [cursor=pointer]:
+                  - /url: /document/product/1278/103960
+              - listitem [ref=f2e116]:
+                - link "API 频率限制说明" [ref=f2e117] [cursor=pointer]:
+                  - /url: /document/product/1278/109059
+          - link [ref=f2e120] [cursor=pointer]:
+            - /url: javascript:void 0;
+            - heading "常见问题" [level=4] [ref=f2e121]
+          - link [ref=f2e124] [cursor=pointer]:
+            - /url: /document/product/1278/59890
+            - heading "联系我们" [level=4] [ref=f2e125]
+          - link [ref=f2e127] [cursor=pointer]:
+            - /url: /document/product/1278/46629
+            - heading "词汇表" [level=4] [ref=f2e128]
+      - generic [ref=f2e129]:
+        - generic [ref=f2e132]:
+          - list [ref=f2e133]:
+            - listitem [ref=f2e134]:
+              - link "文档中心" [ref=f2e135] [cursor=pointer]:
+                - /url: https://cloud.tencent.com/document/product
+            - listitem [ref=f2e136]:
+              - link "入门中心" [ref=f2e137] [cursor=pointer]:
+                - /url: https://cloud.tencent.com/guide
+            - listitem [ref=f2e138]:
+              - link "API 中心" [ref=f2e139] [cursor=pointer]:
+                - /url: https://cloud.tencent.com/document/api
+            - listitem [ref=f2e140]:
+              - link "SDK 中心" [ref=f2e141] [cursor=pointer]:
+                - /url: https://cloud.tencent.com/document/sdk
+            - listitem [ref=f2e142]:
+              - link "文档活动" [ref=f2e143] [cursor=pointer]:
+                - /url: https://cloud.tencent.com/document/act
+            - listitem [ref=f2e144]: 我的反馈
+          - generic [ref=f2e145]:
+            - link "帮你快速理解、总结文档 立即下载" [ref=f2e146] [cursor=pointer]:
+              - /url: https://www.workbuddy.cn/
+              - generic [ref=f2e170]: 帮你快速理解、总结文档
+              - generic [ref=f2e171]: 立即下载
+            - textbox "搜索相关文档" [ref=f2e176]
+        - generic [ref=f2e182]:
+          - generic [ref=f2e184]:
+            - link "文档中心" [ref=f2e185] [cursor=pointer]:
+              - /url: /document/product
+            - generic [ref=f2e186]: ">"
+            - link "云 API" [ref=f2e187] [cursor=pointer]:
+              - /url: /document/product/1278
+            - generic [ref=f2e188]: ">"
+            - link "开发指南" [ref=f2e189] [cursor=pointer]:
+              - /url: /document/product/1278/46637
+            - generic [ref=f2e190]: ">"
+            - generic [ref=f2e191]: 云 API 密钥安全方案推荐
+          - generic [ref=f2e192]:
+            - generic [ref=f2e193]:
+              - heading "云 API 密钥安全方案推荐" [level=1] [ref=f2e194]
+              - generic [ref=f2e195]:
+                - paragraph [ref=f2e196]: 最近更新时间：2025-06-20 09:26:01
+                - generic [ref=f2e197]:
+                  - link [ref=f2e200] [cursor=pointer]:
+                    - /url: https://main.qcloudimg.com/raw/document/product/pdf/1278_46637_cn.pdf
+                  - emphasis [ref=f2e209]: 我的收藏
+            - generic [ref=f2e210]:
+              - heading "本页目录：" [level=2] [ref=f2e211]
+              - list [ref=f2e212]:
+                - listitem [ref=f2e213]:
+                  - link "方案1：通过环境变量读取 SecretId 和 SecretKey" [ref=f2e214] [cursor=pointer]:
+                    - /url: "#.E6.96.B9.E6.A1.881.EF.BC.9A.E9.80.9A.E8.BF.87.E7.8E.AF.E5.A2.83.E5.8F.98.E9.87.8F.E8.AF.BB.E5.8F.96-secretid-.E5.92.8C-secretkey"
+                - listitem [ref=f2e215]:
+                  - link "方案2：使用临时密钥" [ref=f2e216] [cursor=pointer]:
+                    - /url: "#.E6.96.B9.E6.A1.882.EF.BC.9A.E4.BD.BF.E7.94.A8.E4.B8.B4.E6.97.B6.E5.AF.86.E9.92.A5"
+                - listitem [ref=f2e217]:
+                  - link "方案3：使用 KMS 白盒密钥保护 SecretKey" [ref=f2e218] [cursor=pointer]:
+                    - /url: "#.E6.96.B9.E6.A1.883.EF.BC.9A.E4.BD.BF.E7.94.A8-kms-.E7.99.BD.E7.9B.92.E5.AF.86.E9.92.A5.E4.BF.9D.E6.8A.A4-secretkey"
+            - generic [ref=f2e221]:
+              - generic [ref=f2e222]: 代码泄露可能会导致 SecretId 和 SecretKey 泄露，并威胁账号下所有资源的安全性。建议不要在代码中使用持久 SecretId 和 SecretKey，为了提高密钥的安全性，推荐以下几种方案：
+              - heading "方案1：通过环境变量读取 SecretId 和 SecretKey" [level=2] [ref=f2e226]
+              - generic [ref=f2e229]: 将 SecretId 和 SecretKey 预先配置到环境变量中，在代码运行时从环境变量中读取 SecretId 和 SecretKey 的值，代码示例如下：
+              - generic [ref=f2e241]:
+                - generic [ref=f2e243]:
+                  - generic [ref=f2e244]: import
+                  - generic [ref=f2e246]: os
+                - generic [ref=f2e248]:
+                  - generic [ref=f2e249]: from
+                  - generic [ref=f2e251]: tencentcloud
+                  - generic [ref=f2e252]: .
+                  - generic [ref=f2e254]: common
+                  - generic [ref=f2e255]: import
+                  - generic [ref=f2e257]: credential
+                - generic [ref=f2e259]:
+                  - generic [ref=f2e260]: from
+                  - generic [ref=f2e262]: tencentcloud
+                  - generic [ref=f2e263]: .
+                  - generic [ref=f2e265]: common
+                  - generic [ref=f2e266]: .
+                  - generic [ref=f2e268]: exception
+                  - generic [ref=f2e269]: .
+                  - generic [ref=f2e271]: tencent_cloud_sdk_exception
+                  - generic [ref=f2e272]: import
+                  - generic [ref=f2e274]: TencentCloudSDKException
+                - generic [ref=f2e276]:
+                  - generic [ref=f2e277]: from
+                  - generic [ref=f2e279]: tencentcloud
+                  - generic [ref=f2e280]: .
+                  - generic [ref=f2e282]: cvm
+                  - generic [ref=f2e283]: .
+                  - generic [ref=f2e285]: v20170312
+                  - generic [ref=f2e286]: import
+                  - generic [ref=f2e288]: cvm_client
+                  - generic [ref=f2e289]: ","
+                  - generic [ref=f2e291]: models
+                - generic [ref=f2e294]:
+                  - generic [ref=f2e295]: try
+                  - generic [ref=f2e297]: ":"
+                - generic [ref=f2e299]: "# 硬编码密钥到代码中有可能随代码泄露而暴露，有安全隐患，不推荐"
+                - generic [ref=f2e304]: "# 为保护密钥安全，建议将密钥设置在环境变量中"
+                - generic [ref=f2e309]: "# cred = credential.Credential(\"secretId\", \"secretKey\")"
+                - generic [ref=f2e315]:
+                  - generic [ref=f2e316]: cred
+                  - generic [ref=f2e317]: =
+                  - generic [ref=f2e319]: credential
+                  - generic [ref=f2e320]: .
+                  - generic [ref=f2e322]: Credential
+                  - generic [ref=f2e323]: (
+                - generic [ref=f2e326]:
+                  - generic [ref=f2e327]: os
+                  - generic [ref=f2e328]: .
+                  - generic [ref=f2e330]: environ
+                  - generic [ref=f2e331]: .
+                  - generic [ref=f2e333]: get
+                  - generic [ref=f2e334]: (
+                  - generic [ref=f2e336]: "\"TENCENTCLOUD_SECRET_ID\""
+                  - generic [ref=f2e338]: )
+                  - generic [ref=f2e340]: ","
+                - generic [ref=f2e343]:
+                  - generic [ref=f2e344]: os
+                  - generic [ref=f2e345]: .
+                  - generic [ref=f2e347]: environ
+                  - generic [ref=f2e348]: .
+                  - generic [ref=f2e350]: get
+                  - generic [ref=f2e351]: (
+                  - generic [ref=f2e353]: "\"TENCENTCLOUD_SECRET_KEY\""
+                  - generic [ref=f2e355]: )
+                  - generic [ref=f2e357]: )
+                - generic [ref=f2e360]:
+                  - generic [ref=f2e361]: client
+                  - generic [ref=f2e362]: =
+                  - generic [ref=f2e364]: cvm_client
+                  - generic [ref=f2e365]: .
+                  - generic [ref=f2e367]: CvmClient
+                  - generic [ref=f2e368]: (
+                  - generic [ref=f2e370]: cred
+                  - generic [ref=f2e371]: ","
+                  - generic [ref=f2e374]: "\"ap-shanghai\""
+                  - generic [ref=f2e376]: )
+                - generic [ref=f2e380]:
+                  - generic [ref=f2e381]: req
+                  - generic [ref=f2e382]: =
+                  - generic [ref=f2e384]: models
+                  - generic [ref=f2e385]: .
+                  - generic [ref=f2e387]: DescribeInstancesRequest
+                  - generic [ref=f2e388]: (
+                  - generic [ref=f2e390]: )
+                - generic [ref=f2e393]:
+                  - generic [ref=f2e394]: resp
+                  - generic [ref=f2e395]: =
+                  - generic [ref=f2e397]: client
+                  - generic [ref=f2e398]: .
+                  - generic [ref=f2e400]: DescribeInstances
+                  - generic [ref=f2e401]: (
+                  - generic [ref=f2e403]: req
+                  - generic [ref=f2e404]: )
+                - generic [ref=f2e408]:
+                  - generic [ref=f2e410]: print
+                  - generic [ref=f2e412]: (
+                  - generic [ref=f2e414]: resp
+                  - generic [ref=f2e415]: .
+                  - generic [ref=f2e417]: to_json_string
+                  - generic [ref=f2e418]: (
+                  - generic [ref=f2e420]: )
+                  - generic [ref=f2e422]: )
+                - generic [ref=f2e425]:
+                  - generic [ref=f2e426]: except
+                  - generic [ref=f2e428]: TencentCloudSDKException
+                  - generic [ref=f2e429]: as
+                  - generic [ref=f2e431]: err
+                  - generic [ref=f2e432]: ":"
+                - generic [ref=f2e435]:
+                  - generic [ref=f2e437]: print
+                  - generic [ref=f2e439]: (
+                  - generic [ref=f2e441]: err
+                  - generic [ref=f2e442]: )
+              - generic [ref=f2e444]: 环境变量配置可参考以下方式：
+              - generic [ref=f2e447]: 临时配置（当前终端会话中生效，关闭终端后失效）
+              - generic [ref=f2e452]:
+                - generic [ref=f2e455]:
+                  - generic [ref=f2e456]: Linux/macOS 系统
+                  - generic [ref=f2e459]: Windows 系统
+                - generic [ref=f2e472]:
+                  - generic [ref=f2e474]:
+                    - generic [ref=f2e475]: export
+                    - generic [ref=f2e478]: TENCENTCLOUD_SECRET_ID
+                    - generic [ref=f2e480]: =
+                    - generic [ref=f2e482]: 您的SecretId
+                  - generic [ref=f2e484]:
+                    - generic [ref=f2e485]: export
+                    - generic [ref=f2e488]: TENCENTCLOUD_SECRET_KEY
+                    - generic [ref=f2e490]: =
+                    - generic [ref=f2e492]: 您的SecretKey
+              - generic [ref=f2e493]: 永久配置（所有终端生效，重启终端或系统后仍有效）
+              - generic [ref=f2e498]:
+                - generic [ref=f2e501]:
+                  - generic [ref=f2e502]: Linux/macOS 系统
+                  - generic [ref=f2e505]: Windows 系统
+                - generic [ref=f2e518]:
+                  - generic [ref=f2e519]: "# 编辑环境变量文件"
+                  - generic [ref=f2e524]:
+                    - generic [ref=f2e525]: echo
+                    - generic [ref=f2e528]: "'export TENCENTCLOUD_SECRET_ID=您的SecretId'"
+                    - generic [ref=f2e531]: ">>"
+                    - generic [ref=f2e533]: ~/.bashrc
+                  - generic [ref=f2e535]:
+                    - generic [ref=f2e536]: echo
+                    - generic [ref=f2e539]: "'export TENCENTCLOUD_SECRET_KEY=您的SecretKey'"
+                    - generic [ref=f2e542]: ">>"
+                    - generic [ref=f2e544]: ~/.bashrc
+                  - generic [ref=f2e546]: "# 使配置立即生效"
+                  - generic [ref=f2e551]:
+                    - generic [ref=f2e552]: source
+                    - generic [ref=f2e554]: ~/.bashrc
+              - generic [ref=f2e555]: 验证配置是否成功
+              - generic [ref=f2e560]:
+                - generic [ref=f2e563]:
+                  - generic [ref=f2e564]: Linux/macOS 系统
+                  - generic [ref=f2e567]: Windows 系统
+                - generic [ref=f2e580]:
+                  - generic [ref=f2e582]:
+                    - generic [ref=f2e583]: echo
+                    - generic [ref=f2e586]: $TENCENTCLOUD_SECRET_ID
+                  - generic [ref=f2e590]:
+                    - generic [ref=f2e591]: echo
+                    - generic [ref=f2e594]: $TENCENTCLOUD_SECRET_KEY
+              - heading "方案2：使用临时密钥" [level=2] [ref=f2e597]
+              - generic [ref=f2e600]:
+                - generic [ref=f2e601]: 不在代码中使用持久 SecretId 和 SecretKey，而是使用通过
+                - link "GetFederationToken" [ref=f2e603] [cursor=pointer]:
+                  - /url: https://cloud.tencent.com/document/product/1312/48195
+                - generic [ref=f2e607]: 接口换取的用户临时密钥，同时根据权限最小化原则赋予相关权限。代码示例如下：
+              - generic [ref=f2e618]:
+                - generic [ref=f2e619]: "# 换取临时秘钥的 SDK 示例"
+                - generic [ref=f2e624]:
+                  - generic [ref=f2e625]: import
+                  - generic [ref=f2e627]: json
+                - generic [ref=f2e629]:
+                  - generic [ref=f2e630]: import
+                  - generic [ref=f2e632]: os
+                - generic [ref=f2e634]:
+                  - generic [ref=f2e635]: from
+                  - generic [ref=f2e637]: tencentcloud
+                  - generic [ref=f2e638]: .
+                  - generic [ref=f2e640]: common
+                  - generic [ref=f2e641]: import
+                  - generic [ref=f2e643]: credential
+                - generic [ref=f2e645]:
+                  - generic [ref=f2e646]: from
+                  - generic [ref=f2e648]: tencentcloud
+                  - generic [ref=f2e649]: .
+                  - generic [ref=f2e651]: common
+                  - generic [ref=f2e652]: .
+                  - generic [ref=f2e654]: profile
+                  - generic [ref=f2e655]: .
+                  - generic [ref=f2e657]: client_profile
+                  - generic [ref=f2e658]: import
+                  - generic [ref=f2e660]: ClientProfile
+                - generic [ref=f2e662]:
+                  - generic [ref=f2e663]: from
+                  - generic [ref=f2e665]: tencentcloud
+                  - generic [ref=f2e666]: .
+                  - generic [ref=f2e668]: common
+                  - generic [ref=f2e669]: .
+                  - generic [ref=f2e671]: profile
+                  - generic [ref=f2e672]: .
+                  - generic [ref=f2e674]: http_profile
+                  - generic [ref=f2e675]: import
+                  - generic [ref=f2e677]: HttpProfile
+                - generic [ref=f2e679]:
+                  - generic [ref=f2e680]: from
+                  - generic [ref=f2e682]: tencentcloud
+                  - generic [ref=f2e683]: .
+                  - generic [ref=f2e685]: common
+                  - generic [ref=f2e686]: .
+                  - generic [ref=f2e688]: exception
+                  - generic [ref=f2e689]: .
+                  - generic [ref=f2e691]: tencent_cloud_sdk_exception
+                  - generic [ref=f2e692]: import
+                  - generic [ref=f2e694]: TencentCloudSDKException
+                - generic [ref=f2e696]:
+                  - generic [ref=f2e697]: from
+                  - generic [ref=f2e699]: tencentcloud
+                  - generic [ref=f2e700]: .
+                  - generic [ref=f2e702]: sts
+                  - generic [ref=f2e703]: .
+                  - generic [ref=f2e705]: v20180813
+                  - generic [ref=f2e706]: import
+                  - generic [ref=f2e708]: sts_client
+                  - generic [ref=f2e709]: ","
+                  - generic [ref=f2e711]: models
+                - generic [ref=f2e714]:
+                  - generic [ref=f2e715]: try
+                  - generic [ref=f2e717]: ":"
+                - generic [ref=f2e719]: "# 实例化一个认证对象，入参需要传入腾讯云账户的secretId和secretKey，为了保护密钥安全，建议结合方案一，将密钥设置在环境变量中"
+                - generic [ref=f2e724]:
+                  - generic [ref=f2e725]: cred
+                  - generic [ref=f2e726]: =
+                  - generic [ref=f2e728]: credential
+                  - generic [ref=f2e729]: .
+                  - generic [ref=f2e731]: Credential
+                  - generic [ref=f2e732]: (
+                - generic [ref=f2e735]:
+                  - generic [ref=f2e736]: os
+                  - generic [ref=f2e737]: .
+                  - generic [ref=f2e739]: environ
+                  - generic [ref=f2e740]: .
+                  - generic [ref=f2e742]: get
+                  - generic [ref=f2e743]: (
+                  - generic [ref=f2e745]: "\"TENCENTCLOUD_SECRET_ID\""
+                  - generic [ref=f2e747]: )
+                  - generic [ref=f2e749]: ","
+                - generic [ref=f2e752]:
+                  - generic [ref=f2e753]: os
+                  - generic [ref=f2e754]: .
+                  - generic [ref=f2e756]: environ
+                  - generic [ref=f2e757]: .
+                  - generic [ref=f2e759]: get
+                  - generic [ref=f2e760]: (
+                  - generic [ref=f2e762]: "\"TENCENTCLOUD_SECRET_KEY\""
+                  - generic [ref=f2e764]: )
+                  - generic [ref=f2e766]: )
+                - generic [ref=f2e769]:
+                  - generic [ref=f2e770]: httpProfile
+                  - generic [ref=f2e771]: =
+                  - generic [ref=f2e773]: HttpProfile
+                  - generic [ref=f2e774]: (
+                  - generic [ref=f2e776]: )
+                - generic [ref=f2e779]:
+                  - generic [ref=f2e780]: httpProfile
+                  - generic [ref=f2e781]: .
+                  - generic [ref=f2e783]: endpoint
+                  - generic [ref=f2e784]: =
+                  - generic [ref=f2e787]: "\"sts.tencentcloudapi.com\""
+                - generic [ref=f2e790]:
+                  - generic [ref=f2e791]: clientProfile
+                  - generic [ref=f2e792]: =
+                  - generic [ref=f2e794]: ClientProfile
+                  - generic [ref=f2e795]: (
+                  - generic [ref=f2e797]: )
+                - generic [ref=f2e800]:
+                  - generic [ref=f2e801]: clientProfile
+                  - generic [ref=f2e802]: .
+                  - generic [ref=f2e804]: httpProfile
+                  - generic [ref=f2e805]: =
+                  - generic [ref=f2e807]: httpProfile
+                - generic [ref=f2e809]:
+                  - generic [ref=f2e810]: client
+                  - generic [ref=f2e811]: =
+                  - generic [ref=f2e813]: sts_client
+                  - generic [ref=f2e814]: .
+                  - generic [ref=f2e816]: StsClient
+                  - generic [ref=f2e817]: (
+                  - generic [ref=f2e819]: cred
+                  - generic [ref=f2e820]: ","
+                  - generic [ref=f2e823]: "\"\""
+                  - generic [ref=f2e825]: ","
+                  - generic [ref=f2e827]: clientProfile
+                  - generic [ref=f2e828]: )
+                - generic [ref=f2e831]:
+                  - generic [ref=f2e832]: req
+                  - generic [ref=f2e833]: =
+                  - generic [ref=f2e835]: models
+                  - generic [ref=f2e836]: .
+                  - generic [ref=f2e838]: GetFederationTokenRequest
+                  - generic [ref=f2e839]: (
+                  - generic [ref=f2e841]: )
+                - generic [ref=f2e844]:
+                  - generic [ref=f2e845]: params
+                  - generic [ref=f2e846]: =
+                  - generic [ref=f2e849]: "{"
+                - generic [ref=f2e851]: "}"
+                - generic [ref=f2e857]:
+                  - generic [ref=f2e858]: req
+                  - generic [ref=f2e859]: .
+                  - generic [ref=f2e861]: from_json_string
+                  - generic [ref=f2e862]: (
+                  - generic [ref=f2e864]: json
+                  - generic [ref=f2e865]: .
+                  - generic [ref=f2e867]: dumps
+                  - generic [ref=f2e868]: (
+                  - generic [ref=f2e870]: params
+                  - generic [ref=f2e871]: )
+                  - generic [ref=f2e873]: )
+                - generic [ref=f2e876]:
+                  - generic [ref=f2e877]: resp
+                  - generic [ref=f2e878]: =
+                  - generic [ref=f2e880]: client
+                  - generic [ref=f2e881]: .
+                  - generic [ref=f2e883]: GetFederationToken
+                  - generic [ref=f2e884]: (
+                  - generic [ref=f2e886]: req
+                  - generic [ref=f2e887]: )
+                - generic [ref=f2e890]:
+                  - generic [ref=f2e892]: print
+                  - generic [ref=f2e894]: (
+                  - generic [ref=f2e896]: resp
+                  - generic [ref=f2e897]: .
+                  - generic [ref=f2e899]: to_json_string
+                  - generic [ref=f2e900]: (
+                  - generic [ref=f2e902]: )
+                  - generic [ref=f2e904]: )
+                - generic [ref=f2e907]:
+                  - generic [ref=f2e908]: except
+                  - generic [ref=f2e910]: TencentCloudSDKException
+                  - generic [ref=f2e911]: as
+                  - generic [ref=f2e913]: err
+                  - generic [ref=f2e914]: ":"
+                - generic [ref=f2e917]:
+                  - generic [ref=f2e919]: print
+                  - generic [ref=f2e921]: (
+                  - generic [ref=f2e923]: err
+                  - generic [ref=f2e924]: )
+              - heading "方案3：使用 KMS 白盒密钥保护 SecretKey" [level=2] [ref=f2e927]
+              - generic [ref=f2e930]:
+                - generic [ref=f2e931]: 操作指导请参见
+                - link "密钥管理系统-使用 KMS 白盒密钥保护 SecretKey 实践教程" [ref=f2e933] [cursor=pointer]:
+                  - /url: https://cloud.tencent.com/document/product/573/54236
+                - generic [ref=f2e937]: 。
+          - generic [ref=f2e939]:
+            - 'link "上一篇: 云 API Skill 使用说明" [ref=f2e940] [cursor=pointer]':
+              - /url: /document/product/1278/131433
+            - 'link "下一篇: C++ API" [ref=f2e941] [cursor=pointer]':
+              - /url: /document/product/1278/46710
+          - generic [ref=f2e942]:
+            - generic [ref=f2e944]:
+              - generic [ref=f2e945]: 文档内容是否对您有帮助？
+              - generic [ref=f2e946]:
+                - link "有帮助" [ref=f2e947] [cursor=pointer]:
+                  - /url: javascript:;
+                - link "没帮助" [ref=f2e949] [cursor=pointer]:
+                  - /url: javascript:;
+            - paragraph [ref=f2e951]: 如果遇到产品相关问题，您可咨询 在线客服寻求帮助。
+          - generic [ref=f2e953]:
+            - heading "云 API 相关文档" [level=3] [ref=f2e954]
+            - list [ref=f2e955]:
+              - listitem [ref=f2e956]:
+                - link "C++ API" [ref=f2e957] [cursor=pointer]:
+                  - /url: /document/product/1278/46710
+              - listitem [ref=f2e958]:
+                - link ".NET API" [ref=f2e959] [cursor=pointer]:
+                  - /url: /document/product/1278/46711
+              - listitem [ref=f2e960]:
+                - link "GO API" [ref=f2e961] [cursor=pointer]:
+                  - /url: /document/product/1278/46712
+              - listitem [ref=f2e962]:
+                - link "入门必读" [ref=f2e963] [cursor=pointer]:
+                  - /url: /document/product/1278/46696
+              - listitem [ref=f2e964]:
+                - link "使用 API Explorer" [ref=f2e965] [cursor=pointer]:
+                  - /url: /document/product/1278/46697
+              - listitem [ref=f2e966]:
+                - link "购买指南" [ref=f2e967] [cursor=pointer]:
+                  - /url: /document/product/1278/46660
+              - listitem [ref=f2e968]:
+                - link "Java API" [ref=f2e969] [cursor=pointer]:
+                  - /url: /document/product/1278/46713
+              - listitem [ref=f2e970]:
+                - link "使用 TCCLI" [ref=f2e971] [cursor=pointer]:
+                  - /url: /document/product/1278/46705
+              - listitem [ref=f2e972]:
+                - link "Node.js API" [ref=f2e973] [cursor=pointer]:
+                  - /url: /document/product/1278/46714
+    - generic [ref=f2e975]:
+      - navigation [ref=f2e977]:
+        - generic [ref=f2e978]: Copyright © 2013-2026 Tencent Cloud. All Rights Reserved. 腾讯云 版权所有
+        - link "深圳市腾讯计算机系统有限公司" [ref=f2e979] [cursor=pointer]:
+          - /url: https://qcloudimg.tencent-cloud.cn/raw/986376a919726e0c35e96b311f54184d.jpg
+        - generic [ref=f2e980]: ICP备案/许可证号：
+        - link "粤B2-20090059" [ref=f2e981] [cursor=pointer]:
+          - /url: https://beian.miit.gov.cn/#/Integrated/index
+        - link "粤公网安备44030502008569号" [ref=f2e982] [cursor=pointer]:
+          - /url: https://beian.mps.gov.cn/#/query/webSearch?code=44030502008569
+        - link "腾讯云计算（北京）有限责任公司" [ref=f2e985] [cursor=pointer]:
+          - /url: https://qcloudimg.tencent-cloud.cn/raw/a2390663ee4a95ceeead8fdc34d4b207.jpg
+        - generic [ref=f2e986]: 京ICP证150476号 |
+        - link "京ICP备11018762号" [ref=f2e987] [cursor=pointer]:
+          - /url: https://beian.miit.gov.cn/#/Integrated/index
+      - generic [ref=f2e988]: 中国站
+    - generic [ref=f2e992]:
+      - button "咨询" [ref=f2e994] [cursor=pointer]
+      - button [ref=f2e1001] [cursor=pointer]

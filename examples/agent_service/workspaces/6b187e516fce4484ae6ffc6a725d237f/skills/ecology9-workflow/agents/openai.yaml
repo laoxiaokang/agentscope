@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ecology 9 Workflows"
+  short_description: "Query and process Ecology 9 workflows"
+  default_prompt: "Use $ecology9-workflow to query authorized OA workflows or process one reviewed pending item."

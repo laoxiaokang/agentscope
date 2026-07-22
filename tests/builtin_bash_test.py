@@ -2,7 +2,9 @@
 """Bash tool test case."""
 
 import os
+import shlex
 import sys
+import tempfile
 import unittest
 from unittest.async_case import IsolatedAsyncioTestCase
 from unittest.mock import AsyncMock, MagicMock, patch
@@ -51,27 +53,46 @@ class BashCwdTest(IsolatedAsyncioTestCase):
         create_process = AsyncMock(return_value=process)
         with patch(
             "agentscope.tool._builtin._backend."
-            "asyncio.create_subprocess_exec",
+            "asyncio.create_subprocess_shell",
             create_process,
         ):
             chunks = []
             async for chunk in await Bash(cwd="workspace")(command="pwd"):
                 chunks.append(chunk)
 
-        # cwd is forwarded, and the command line is wrapped in the
-        # platform's native shell (the backend primitive runs an argv
-        # without a shell): ``cmd /c`` on Windows, ``/bin/sh -c`` else.
+        # cwd and the complete command string are forwarded to the native
+        # shell without an intermediate ``cmd /c`` argv wrapper.
         self.assertEqual(create_process.call_args.kwargs["cwd"], "workspace")
-        expected_argv = (
-            ("cmd", "/c", "pwd")
-            if os.name == "nt"
-            else ("/bin/sh", "-c", "pwd")
-        )
         self.assertEqual(
             create_process.call_args.args,
-            expected_argv,
+            ("pwd",),
         )
         self.assertEqual(chunks[0].state, "running")
+
+    async def test_quoted_python_script_path_runs(self) -> None:
+        """Bash can run a Python script whose path contains spaces."""
+        with tempfile.TemporaryDirectory() as tmp:
+            script_dir = os.path.join(tmp, "skill with spaces", "scripts")
+            os.makedirs(script_dir)
+            script_path = os.path.join(script_dir, "workflow query.py")
+            with open(script_path, "w", encoding="utf-8") as file:
+                file.write("print('skill script ran')\n")
+
+            if sys.platform == "win32":
+                command = f'"{sys.executable}" "{script_path}"'
+            else:
+                command = (
+                    f"{shlex.quote(sys.executable)} "
+                    f"{shlex.quote(script_path)}"
+                )
+
+            chunks = []
+            async for chunk in await Bash(cwd=tmp)(command=command):
+                chunks.append(chunk)
+
+        self.assertEqual(len(chunks), 1)
+        self.assertEqual(chunks[0].state, "running")
+        self.assertIn("skill script ran", chunks[0].content[0].text)
 
 
 @unittest.skipIf(

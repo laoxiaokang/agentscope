@@ -1,0 +1,52 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e4]:
+    - generic [ref=e6]:
+      - link "腾讯云" [ref=e7] [cursor=pointer]:
+        - /url: https://cloud.tencent.com
+      - list [ref=e10]:
+        - listitem [ref=e11]:
+          - button "大模型" [ref=e12]
+        - listitem [ref=e14]:
+          - button "最新活动" [ref=e15] [cursor=pointer]
+        - listitem [ref=e16]:
+          - button "产品" [ref=e17] [cursor=pointer]
+        - listitem [ref=e18]:
+          - button "解决方案" [ref=e19] [cursor=pointer]
+        - listitem [ref=e20]:
+          - button "定价" [ref=e21] [cursor=pointer]
+        - listitem [ref=e22]:
+          - button "企业中心" [ref=e23] [cursor=pointer]
+        - listitem [ref=e24]:
+          - button "云市场" [ref=e25] [cursor=pointer]
+        - listitem [ref=e26]:
+          - button "开发者" [ref=e27] [cursor=pointer]
+        - listitem [ref=e28]:
+          - button "客户支持" [ref=e29] [cursor=pointer]
+        - listitem [ref=e30]:
+          - button "合作与生态" [ref=e31] [cursor=pointer]
+        - listitem [ref=e32]:
+          - button "了解腾讯云" [ref=e33] [cursor=pointer]
+      - generic [ref=e34]:
+        - generic [ref=e36] [cursor=pointer]:
+          - list [ref=e37]:
+            - listitem [ref=e38]: WorkBuddy
+          - button [ref=e39]
+        - generic [ref=e41]:
+          - generic [ref=e42]: 中国站
+          - generic [ref=e44]:
+            - link "文档" [ref=e45] [cursor=pointer]:
+              - /url: https://cloud.tencent.com/document/product
+            - link "备案" [ref=e46] [cursor=pointer]:
+              - /url: https://cloud.tencent.com/product/ba
+            - button "控制台" [ref=e47] [cursor=pointer]
+        - link "登录" [ref=e48] [cursor=pointer]:
+          - /url: javascript:void 0;
+        - link "免费注册" [ref=e49] [cursor=pointer]:
+          - /url: javascript:void 0;
+  - generic [ref=e55]:
+    - heading "404，页面不存在" [level=2] [ref=e56]
+    - paragraph [ref=e57]:
+      - text: 5 秒后将自动跳转至
+      - link "API 中心" [ref=e58] [cursor=pointer]:
+        - /url: /document/api
+      - text: ！
