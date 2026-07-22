@@ -5,7 +5,7 @@ from unittest.async_case import IsolatedAsyncioTestCase
 
 from utils import AnyString, MockModel
 
-from agentscope.agent import Agent
+from agentscope.agent import Agent, ContextConfig, InjectionConfig
 from agentscope.model import ChatResponse
 from agentscope.tool import (
     ToolBase,
@@ -110,6 +110,9 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
             system_prompt="You are a helpful assistant.",
             model=self.model,
             toolkit=Toolkit(),
+            # The runtime state injection is covered by agent_injection_test,
+            # turn it off here to keep the event assertions focused.
+            injection_config=InjectionConfig(inject_runtime_state=False),
         )
 
     def _get_event_base(self, reply_id: str) -> dict:
@@ -127,6 +130,8 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
             "id": AnyString(),
             "created_at": AnyString(),
             "finished_at": None,
+            "finished_reason": None,
+            "error": None,
             "metadata": {},
             "name": "Friday",
             "role": "assistant",
@@ -151,10 +156,12 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
         self.assertIsNot(agent_1.model_config, agent_2.model_config)
         self.assertIsNot(agent_1.context_config, agent_2.context_config)
         self.assertIsNot(agent_1.react_config, agent_2.react_config)
+        self.assertIsNot(agent_1.injection_config, agent_2.injection_config)
 
         agent_1.model_config.max_retries = 3
         agent_1.context_config.tool_result_limit = 123
         agent_1.react_config.max_iters = 2
+        agent_1.injection_config.timezone = "Asia/Shanghai"
 
         self.assertNotEqual(
             agent_1.model_config.max_retries,
@@ -168,6 +175,33 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
             agent_1.react_config.max_iters,
             agent_2.react_config.max_iters,
         )
+        self.assertNotEqual(
+            agent_1.injection_config.timezone,
+            agent_2.injection_config.timezone,
+        )
+
+    async def test_inconsistent_ratios_are_rejected(self) -> None:
+        """The ratios across the context and injection configs must leave room
+        ahead of the compression threshold."""
+        with self.assertRaises(ValueError):
+            Agent(
+                name="agent",
+                system_prompt="You are an agent.",
+                model=MockModel(),
+                context_config=ContextConfig(
+                    trigger_ratio=0.5,
+                    reserve_ratio=0.6,
+                ),
+            )
+
+        with self.assertRaises(ValueError):
+            Agent(
+                name="agent",
+                system_prompt="You are an agent.",
+                model=MockModel(),
+                context_config=ContextConfig(trigger_ratio=0.5),
+                injection_config=InjectionConfig(context_buffer_ratio=0.5),
+            )
 
     async def test_streaming_reasoning(self) -> None:
         """Test the streaming model inference without tool calls generated,
@@ -249,6 +283,7 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
             },
             {
                 "type": "REPLY_END",
+                "error": None,
                 "session_id": session_id,
                 "finished_reason": "completed",
             },
@@ -275,6 +310,8 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
                     },
                 ],
                 "finished_at": AnyString(),
+                "finished_reason": None,
+                "error": None,
             },
             {
                 **msg_base,
@@ -307,6 +344,8 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
                 ],
                 "created_at": AnyString(),
                 "finished_at": None,
+                "finished_reason": None,
+                "error": None,
                 "id": AnyString(),
                 "metadata": {},
                 "usage": None,
@@ -328,6 +367,8 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
                 ],
                 "metadata": {},
                 "finished_at": AnyString(),
+                "finished_reason": None,
+                "error": None,
             },
             {
                 **msg_base,
@@ -355,6 +396,8 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
                 ],
                 "metadata": {},
                 "finished_at": AnyString(),
+                "finished_reason": None,
+                "error": None,
             },
             {
                 **msg_base,
@@ -433,6 +476,7 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
             },
             {
                 "type": "REPLY_END",
+                "error": None,
                 "session_id": session_id,
                 "finished_reason": "completed",
             },
@@ -460,6 +504,8 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
                 ],
                 "metadata": {},
                 "finished_at": AnyString(),
+                "finished_reason": None,
+                "error": None,
             },
             {
                 **msg_base,
@@ -502,6 +548,8 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
                 ],
                 "created_at": AnyString(),
                 "finished_at": None,
+                "finished_reason": None,
+                "error": None,
                 "id": AnyString(),
                 "metadata": {},
                 "usage": None,
@@ -523,6 +571,8 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
                 ],
                 "metadata": {},
                 "finished_at": AnyString(),
+                "finished_reason": None,
+                "error": None,
             },
             {
                 **msg_base,
@@ -550,6 +600,8 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
                 ],
                 "metadata": {},
                 "finished_at": AnyString(),
+                "finished_reason": None,
+                "error": None,
             },
             {
                 **msg_base,
@@ -595,6 +647,8 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
                 "id": AnyString(),
                 "created_at": AnyString(),
                 "finished_at": None,
+                "finished_reason": None,
+                "error": None,
                 "metadata": {},
                 "name": "Friday",
                 "role": "assistant",
@@ -826,6 +880,7 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
             },
             {
                 "type": "REPLY_END",
+                "error": None,
                 "session_id": session_id,
                 "finished_reason": "completed",
             },
@@ -851,6 +906,8 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
                     },
                 ],
                 "finished_at": AnyString(),
+                "finished_reason": None,
+                "error": None,
             },
             {
                 "content": [
@@ -1057,6 +1114,7 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
             },
             {
                 "type": "REPLY_END",
+                "error": None,
                 "session_id": session_id,
                 "finished_reason": "completed",
             },
@@ -1103,6 +1161,8 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
                     },
                 ],
                 "finished_at": AnyString(),
+                "finished_reason": None,
+                "error": None,
             },
             {
                 "content": [
@@ -1330,6 +1390,7 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
             },
             {
                 "type": "REPLY_END",
+                "error": None,
                 "session_id": session_id,
                 "finished_reason": "completed",
             },
@@ -1388,6 +1449,8 @@ class AgentBasicTest(IsolatedAsyncioTestCase):
                     },
                 ],
                 "finished_at": AnyString(),
+                "finished_reason": None,
+                "error": None,
             },
             {
                 "content": [
