@@ -1,0 +1,18 @@
+- generic [ref=f1e16]:
+  - generic "扫码登录" [ref=f1e18] [cursor=pointer]: 
+  - generic [ref=f1e19]:
+    - generic [ref=f1e20]:
+      - textbox "登录名" [ref=f1e21]
+      - text: 
+    - generic [ref=f1e22]:
+      - textbox "登录密码" [ref=f1e23]
+      - text: 
+    - generic [ref=f1e25]:
+      - generic "记住账号" [ref=f1e26]:
+        - generic [ref=f1e27] [cursor=pointer]:
+          - checkbox "记住账号" [ref=f1e30]
+          - text: 记住账号
+      - generic "记住密码" [ref=f1e31]:
+        - generic [ref=f1e32] [cursor=pointer]:
+          - checkbox "记住密码" [ref=f1e35]
+          - text: 记住密码

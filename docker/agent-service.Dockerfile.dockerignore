@@ -1,0 +1,17 @@
+.git
+.github
+.agents
+.gemini
+.pytest_cache
+assets
+docs
+scripts
+tests
+examples/web_ui
+examples/agent_service/.playwright-mcp
+examples/agent_service/blobs
+examples/agent_service/workspaces
+**/__pycache__
+**/*.pyc
+**/*.pyo
+docker/.env

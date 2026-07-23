@@ -1,0 +1,43 @@
+name: agentscope
+
+services:
+  agent-service:
+    image: agentscope-agent-service:local
+    build:
+      context: ..
+      dockerfile: docker/agent-service.Dockerfile
+    restart: unless-stopped
+    environment:
+      REDIS_HOST: ${REDIS_HOST:?Set REDIS_HOST in docker/.env}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_DB: ${REDIS_DB:-0}
+      MILVUS_TOKEN: ${MILVUS_TOKEN:?Set MILVUS_TOKEN in docker/.env}
+      MILVUS_URI: ${MILVUS_URI:-https://in03-27c7c2ecead182f.serverless.ali-cn-hangzhou.cloud.zilliz.com.cn}
+      MILVUS_DB_NAME: ${MILVUS_DB_NAME:-default}
+      S3_BUCKET: ${S3_BUCKET:?Set S3_BUCKET in docker/.env}
+      S3_ENDPOINT: ${S3_ENDPOINT:-}
+      S3_USE_SSL: ${S3_USE_SSL:-true}
+      S3_ADDRESSING_STYLE: ${S3_ADDRESSING_STYLE:-auto}
+      S3_SIGNATURE_VERSION: ${S3_SIGNATURE_VERSION:-s3v4}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
+      AMAP_API_KEY: ${AMAP_API_KEY:-}
+      LUCKIN_MCP_TOKEN: ${LUCKIN_MCP_TOKEN:-}
+      PLAYWRIGHT_MCP_COMMAND: ${PLAYWRIGHT_MCP_COMMAND:-playwright-mcp}
+      PLAYWRIGHT_MCP_ARGS: "${PLAYWRIGHT_MCP_ARGS:---headless --no-sandbox --executable-path /opt/playwright-browser/chrome}"
+    ports:
+      - "${AGENT_SERVICE_PORT:-8000}:8000"
+    volumes:
+      - ../examples/agent_service/workspaces:/app/examples/agent_service/workspaces
+
+  web-ui:
+    image: agentscope-web-ui:local
+    build:
+      context: ..
+      dockerfile: docker/web-ui.Dockerfile
+    restart: unless-stopped
+    ports:
+      - "${WEB_UI_PORT:-8080}:8080"

@@ -4,9 +4,12 @@
     "is_stateful": true,
     "mcp_config": {
       "type": "stdio_mcp",
-      "command": "npx",
+      "command": "playwright-mcp",
       "args": [
-        "@playwright/mcp@latest"
+        "--headless",
+        "--no-sandbox",
+        "--executable-path",
+        "/opt/playwright-browser/chrome"
       ],
       "env": null,
       "cwd": null,
@@ -18,7 +21,7 @@
   },
   {
     "name": "amap",
-    "is_stateful": true,
+    "is_stateful": false,
     "mcp_config": {
       "type": "http_mcp",
       "url": "https://mcp.amap.com/mcp?key=68715d61ee4ae56be37493c9e771d36b",
@@ -31,7 +34,7 @@
   },
   {
     "name": "my-coffee",
-    "is_stateful": true,
+    "is_stateful": false,
     "mcp_config": {
       "type": "http_mcp",
       "url": "https://gwmcp.lkcoffee.com/order/user/mcp",

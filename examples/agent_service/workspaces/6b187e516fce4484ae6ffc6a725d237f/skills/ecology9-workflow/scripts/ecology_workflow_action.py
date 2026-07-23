@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import time
 import xml.etree.ElementTree as ET
@@ -40,6 +41,24 @@ ACTION_DEFINITIONS = {
 }
 
 OUTCOME_EXIT_CODES = {"confirmed": 0, "not_applied": 2, "unknown": 3}
+MAX_KEY_FIELDS = 8
+MAX_KEY_FIELD_VALUE_LENGTH = 160
+INTERNAL_FIELD_NAME = re.compile(
+    r"^(?:(?:field|main|detail)[_-]?\d+|(?:request|workflow|node|user|resource|form|bill)?_?id\d*)$",
+    re.IGNORECASE,
+)
+SENSITIVE_FIELD_TERMS = (
+    "password",
+    "passwd",
+    "secret",
+    "token",
+    "credential",
+    "verificationcode",
+    "\u5bc6\u7801",
+    "\u53e3\u4ee4",
+    "\u5bc6\u94a5",
+    "\u9a8c\u8bc1\u7801",
+)
 
 
 class ActionError(RuntimeError):
@@ -169,6 +188,54 @@ def required_editable_empty_fields(info: ET.Element) -> int:
     return missing
 
 
+def summary_text(value: str, max_length: int = MAX_KEY_FIELD_VALUE_LENGTH) -> str:
+    normalized = re.sub(r"\s+", " ", value).strip()
+    if len(normalized) <= max_length:
+        return normalized
+    return normalized[: max_length - 3].rstrip() + "..."
+
+
+def safe_summary_field_name(value: str) -> str:
+    name = summary_text(value, 80)
+    compact = re.sub(r"[\s_-]+", "", name).casefold()
+    if not name or INTERNAL_FIELD_NAME.fullmatch(compact):
+        return ""
+    if any(term.casefold() in compact for term in SENSITIVE_FIELD_TERMS):
+        return ""
+    return name
+
+
+def sanitized_key_fields(
+    info: ET.Element,
+    max_fields: int = MAX_KEY_FIELDS,
+) -> tuple[list[dict[str, str]], bool]:
+    main_table = direct_child(info, "workflowMainTableInfo")
+    if main_table is None:
+        return [], False
+
+    fields: list[dict[str, str]] = []
+    seen: set[tuple[str, str]] = set()
+    for field in main_table.iter():
+        if query.local_name(field.tag) != "WorkflowRequestTableField":
+            continue
+        visible = direct_text(field, "isView", "fieldView", "viewable", "visible")
+        if visible and not flag(visible):
+            continue
+        name = safe_summary_field_name(
+            direct_text(field, "fieldShowName", "fieldLabel", "fieldName", "name")
+        )
+        value = summary_text(direct_text(field, "fieldValue", "value"))
+        if not name or not value:
+            continue
+        key = (name.casefold(), value)
+        if key in seen:
+            continue
+        seen.add(key)
+        fields.append({"name": name, "value": value})
+
+    return fields[:max_fields], len(fields) > max_fields
+
+
 def set_direct_text(node: ET.Element, name: str, value: str) -> None:
     child = direct_child(node, name)
     if child is None:
@@ -247,13 +314,22 @@ def pending_items(client: query.SoapClient, user_id: int) -> dict[str, Any]:
     )
 
 
-def output_base(args: argparse.Namespace, detail: dict[str, str]) -> dict[str, Any]:
+def output_base(
+    args: argparse.Namespace,
+    detail: dict[str, str],
+    info: ET.Element,
+    remark: str,
+) -> dict[str, Any]:
+    key_fields, key_fields_truncated = sanitized_key_fields(info)
     return {
         "mode": "workflow_action",
         "action": args.action,
         "requestName": detail["requestName"],
         "currentNodeName": detail["currentNodeName"],
         "buttonName": detail["buttonName"],
+        "remark": remark,
+        "keyFields": key_fields,
+        "keyFieldsTruncated": key_fields_truncated,
         "queriedAt": query.queried_at(),
         "elapsedMs": 0,
     }
@@ -348,7 +424,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         )
         info = workflow_request_info(detail_root)
         detail = validate_detail(selected, info, args.action, args.expected_node)
-        result = output_base(args, detail)
+        result = output_base(args, detail, info, remark)
 
         if not args.confirm:
             result.update(

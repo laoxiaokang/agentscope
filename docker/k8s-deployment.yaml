@@ -1,0 +1,243 @@
+# AgentScope Kubernetes deployment
+#
+# Before applying:
+# 1. Replace every "change-me" value below.
+# 2. Ensure both :local images exist on every Kubernetes node, or replace
+#    them with image names from a registry reachable by the cluster.
+# 3. Apply with: kubectl apply -f docker/k8s-deployment.yaml
+# 4. Local access:
+#      kubectl -n agentscope port-forward service/agentscope-web-ui 8080:80
+#      kubectl -n agentscope port-forward service/agentscope-agent-service 8000:8000
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: agentscope
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agentscope-config
+  namespace: agentscope
+data:
+  REDIS_HOST: "172.19.10.26"
+  REDIS_PORT: "6379"
+  REDIS_DB: "0"
+  MILVUS_URI: "https://in03-27c7c2ecead182f.serverless.ali-cn-hangzhou.cloud.zilliz.com.cn"
+  MILVUS_DB_NAME: "default"
+  S3_BUCKET: "change-me"
+  S3_ENDPOINT: ""
+  S3_USE_SSL: "true"
+  S3_ADDRESSING_STYLE: "auto"
+  S3_SIGNATURE_VERSION: "s3v4"
+  AWS_REGION: "us-east-1"
+  PLAYWRIGHT_MCP_COMMAND: "playwright-mcp"
+  PLAYWRIGHT_MCP_ARGS: "--headless --no-sandbox --executable-path /opt/playwright-browser/chrome"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: agentscope-secrets
+  namespace: agentscope
+type: Opaque
+stringData:
+  REDIS_PASSWORD: "change-me"
+  MILVUS_TOKEN: "change-me"
+  AWS_ACCESS_KEY_ID: ""
+  AWS_SECRET_ACCESS_KEY: ""
+  AWS_SESSION_TOKEN: ""
+  AMAP_API_KEY: ""
+  LUCKIN_MCP_TOKEN: ""
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: agentscope-workspaces
+  namespace: agentscope
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agentscope-agent-service
+  namespace: agentscope
+  labels:
+    app.kubernetes.io/name: agentscope-agent-service
+    app.kubernetes.io/part-of: agentscope
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: agentscope-agent-service
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: agentscope-agent-service
+        app.kubernetes.io/part-of: agentscope
+    spec:
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+        - name: agent-service
+          image: agentscope-agent-service:local
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - configMapRef:
+                name: agentscope-config
+            - secretRef:
+                name: agentscope-secrets
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: workspaces
+              mountPath: /app/examples/agent_service/workspaces
+            - name: shared-memory
+              mountPath: /dev/shm
+      volumes:
+        - name: workspaces
+          persistentVolumeClaim:
+            claimName: agentscope-workspaces
+        - name: shared-memory
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agentscope-agent-service
+  namespace: agentscope
+  labels:
+    app.kubernetes.io/name: agentscope-agent-service
+    app.kubernetes.io/part-of: agentscope
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: agentscope-agent-service
+  ports:
+    - name: http
+      port: 8000
+      targetPort: http
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agentscope-web-ui
+  namespace: agentscope
+  labels:
+    app.kubernetes.io/name: agentscope-web-ui
+    app.kubernetes.io/part-of: agentscope
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: agentscope-web-ui
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: agentscope-web-ui
+        app.kubernetes.io/part-of: agentscope
+    spec:
+      containers:
+        - name: web-ui
+          image: agentscope-web-ui:local
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 2
+            timeoutSeconds: 2
+            failureThreshold: 15
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: http
+            periodSeconds: 20
+            timeoutSeconds: 2
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agentscope-web-ui
+  namespace: agentscope
+  labels:
+    app.kubernetes.io/name: agentscope-web-ui
+    app.kubernetes.io/part-of: agentscope
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: agentscope-web-ui
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

@@ -67,6 +67,12 @@ def workflow_detail() -> str:
       <requestRecords><WorkflowRequestTableRecord><workflowRequestTableFields>
         <WorkflowRequestTableField><fieldName>reason</fieldName><fieldValue>filled</fieldValue>
           <isMand>1</isMand><isEdit>1</isEdit></WorkflowRequestTableField>
+        <WorkflowRequestTableField><fieldName>field1001</fieldName><fieldShowName>Amount</fieldShowName>
+          <fieldValue>360.00</fieldValue><isView>1</isView></WorkflowRequestTableField>
+        <WorkflowRequestTableField><fieldName>hiddenNote</fieldName><fieldValue>do not show</fieldValue>
+          <isView>0</isView></WorkflowRequestTableField>
+        <WorkflowRequestTableField><fieldName>password</fieldName><fieldValue>do not show</fieldValue>
+          <isView>1</isView></WorkflowRequestTableField>
       </workflowRequestTableFields></WorkflowRequestTableRecord></requestRecords>
     </multiRef>"""
 
@@ -268,6 +274,15 @@ class WorkflowScriptTests(unittest.TestCase):
             self.assertEqual(state.submit_type, "submit")
             self.assertEqual(state.embedded_remark, "Looks good")
             self.assertEqual(state.argument_remark, "Looks good")
+            self.assertEqual(result["remark"], "Looks good")
+        self.assertEqual(
+            result["keyFields"],
+            [
+                {"name": "reason", "value": "filled"},
+                {"name": "Amount", "value": "360.00"},
+            ],
+        )
+        self.assertFalse(result["keyFieldsTruncated"])
         self.assertEqual(set(state.accept_headers), {ACCEPT})
         return result, state
 
@@ -302,6 +317,29 @@ class WorkflowScriptTests(unittest.TestCase):
         self.assertEqual(result["action"], "forward")
         self.assertEqual(result["outcome"], "confirmed")
         self.assertEqual(result["verification"], "recipient_todo_created")
+
+    def test_preview_includes_sanitized_summary_without_writing(self) -> None:
+        state = State()
+        args = action_args()
+        args.confirm = False
+        with running_server(state) as base_url:
+            original = action.query.load_base_url
+            action.query.load_base_url = lambda: base_url
+            try:
+                result = action.run(args)
+            finally:
+                action.query.load_base_url = original
+
+        self.assertEqual(state.submit_calls, 0)
+        self.assertEqual(result["status"], "preview")
+        self.assertEqual(result["remark"], "Looks good")
+        self.assertEqual(
+            result["keyFields"],
+            [
+                {"name": "reason", "value": "filled"},
+                {"name": "Amount", "value": "360.00"},
+            ],
+        )
 
     def test_python_and_powershell_query_entrypoints_match(self) -> None:
         powershell = shutil.which("powershell.exe") or shutil.which("pwsh")

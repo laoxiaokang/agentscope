@@ -68,4 +68,18 @@ Trust only `confirmed` as completion. Never automatically repeat `not_applied` o
 
 Treat a workcode as an identifier, not authentication. Require explicit authorization for the operator, target workflow, action, recipient when forwarding, and opinion when used. A direct instruction containing the required fields is sufficient; otherwise stop after preview and ask for the missing confirmation.
 
-The script returns JSON without the endpoint, workcode, internal user ID, internal request ID, or raw SOAP. Summarize only the target title and node, mutation outcome, verification result, and elapsed time.
+The script returns JSON without the endpoint, workcode, internal user ID, internal request ID, or raw SOAP. It includes the reviewed opinion and up to eight non-empty, visible main-form fields in `keyFields`; secret-like and internal-ID fields are filtered. `keyFieldsTruncated` states whether more safe fields were available.
+
+## Post-action Receipt
+
+After all requested writes finish, always return a concise result receipt instead of only saying that processing succeeded.
+
+- For one item, use a compact labeled list. For two or more items, use a Markdown table with `#`, `流程`, `关键数据`, `操作/意见`, and `结果` columns.
+- Start with `已完成 N 个流程` only when all outcomes are `confirmed`. Otherwise state `N/M 个流程已确认`, followed by the number not applied or awaiting verification.
+- Use the workflow title as `流程`. Render the most decision-relevant one to four entries from `keyFields` as `名称：值`; state `无可安全展示的关键字段` when the list is empty.
+- Render the reviewed action and opinion together. Use `同意`, `退回`, or `转发` for the operation; do not invent an opinion or forwarding recipient that was not reviewed.
+- Map `confirmed` to `已批准`, `已退回`, or `已转发`. Map `not_applied` to `未生效`; map `unknown` to `结果待核验`. Never describe `not_applied` or `unknown` as completed.
+- Translate verification consistently: `left_todo` as `已离开我的待办`, `still_todo` as `仍在我的待办`, `recipient_todo_created` as `已送达接收人待办`, `operator_left_todo` as `已离开我的待办`, `recipient_not_found` as `未在接收人待办中找到`, `recipient_query_unavailable` as `接收人待办核验不可用`, `unavailable` as `待办核验不可用`, and `inconclusive` as `核验结果不确定`.
+- Include the original node when useful. Show a destination or next node only when a sanitized response explicitly provides it; otherwise use the translated verification and do not infer routing.
+- Add a final total line for confirmed, not-applied, and unknown counts. Sum monetary values only when every included value is unambiguously the same business measure and currency; label the total with that currency. Do not sum unrelated numeric fields.
+- Keep elapsed time optional and secondary. Never expose the host, workcode, internal user/request/template IDs, raw SOAP, action button names, or hidden fields.

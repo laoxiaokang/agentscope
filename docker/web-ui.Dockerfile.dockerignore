@@ -1,0 +1,16 @@
+.git
+.github
+.agents
+.gemini
+.pytest_cache
+assets
+docs
+scripts
+src
+tests
+examples/agent_service
+examples/web_ui/node_modules
+examples/web_ui/**/node_modules
+examples/web_ui/**/dist
+examples/web_ui/.husky
+docker/.env
