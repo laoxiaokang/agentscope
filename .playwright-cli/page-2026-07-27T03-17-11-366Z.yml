@@ -1,0 +1,17 @@
+- generic [ref=e4]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - generic [ref=e7]: 连接到服务器
+      - generic [ref=e8]: 请输入服务器地址和用户名以开始使用。
+    - generic [ref=e11]:
+      - group [ref=e12]:
+        - generic [ref=e13]: 服务器地址
+        - textbox "服务器地址" [ref=e14]:
+          - /placeholder: https://...
+      - group [ref=e15]:
+        - generic [ref=e16]: 用户名
+        - textbox "用户名" [ref=e17]:
+          - /placeholder: 请输入用户名
+      - group [ref=e18]:
+        - button "开始使用" [ref=e19]
+  - paragraph [ref=e20]: 此应用仅提供前端服务，所有数据均来自填写的服务器地址，用户名仅用于服务端鉴权。

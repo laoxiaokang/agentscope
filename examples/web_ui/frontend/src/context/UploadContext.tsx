@@ -12,6 +12,7 @@ import {
 import { MAX_CONCURRENT_UPLOADS, isTerminal, type UploadTask } from './uploadTypes';
 import { knowledgeBaseApi } from '@/api';
 import type { KnowledgeDocumentStatus } from '@/api';
+import { createUuid } from '@/utils/uuid';
 
 /**
  * Public contract the surrounding app sees. Exposed via the React
@@ -159,13 +160,6 @@ function reducer(state: UploadTask[], action: Action): UploadTask[] {
 	}
 }
 
-function newTaskId(): string {
-	if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
-		return crypto.randomUUID();
-	}
-	return `upload-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
-}
-
 interface UploadProviderProps {
 	children: ReactNode;
 }
@@ -272,7 +266,7 @@ export function UploadProvider({ children }: UploadProviderProps) {
 		const refs = refsRef.current!;
 		const now = Date.now();
 		const newTasks = files.map((file): UploadTask => {
-			const taskId = newTaskId();
+			const taskId = createUuid();
 			refs.files.set(taskId, file);
 			return {
 				taskId,

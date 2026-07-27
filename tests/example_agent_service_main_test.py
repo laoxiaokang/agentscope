@@ -96,6 +96,51 @@ def _load_health_access_log_filter() -> Callable[[logging.LogRecord], bool]:
 class AgentServiceMainTest(TestCase):
     """Test optional MCP registration in the example service."""
 
+    def test_redis_message_bus_reuses_storage_connection_settings(
+        self,
+    ) -> None:
+        tree = ast.parse(_MAIN_PATH.read_text(encoding="utf-8"))
+        constructor_kwargs: dict[str, dict[str, str]] = {}
+
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.Call) or not isinstance(
+                node.func,
+                ast.Name,
+            ):
+                continue
+            if node.func.id not in {"RedisStorage", "RedisMessageBus"}:
+                continue
+            constructor_kwargs[node.func.id] = {
+                keyword.arg: ast.dump(keyword.value)
+                for keyword in node.keywords
+                if keyword.arg is not None
+            }
+
+        self.assertEqual(
+            constructor_kwargs["RedisStorage"],
+            constructor_kwargs["RedisMessageBus"],
+        )
+        self.assertEqual(
+            set(constructor_kwargs["RedisMessageBus"]),
+            {"host", "port", "password", "db"},
+        )
+
+        create_app_calls = [
+            node
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "create_app"
+        ]
+        self.assertEqual(len(create_app_calls), 1)
+        message_bus_arg = next(
+            keyword.value
+            for keyword in create_app_calls[0].keywords
+            if keyword.arg == "message_bus"
+        )
+        self.assertIsInstance(message_bus_arg, ast.Name)
+        self.assertEqual(message_bus_arg.id, "message_bus")
+
     def test_luckin_mcp_uses_environment_token(self) -> None:
         clients = _execute_luckin_block("test-luckin-token")
 

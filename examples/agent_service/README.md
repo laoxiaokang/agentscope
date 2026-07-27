@@ -42,6 +42,11 @@ sudo systemctl start redis-server
 docker run --rm -p 6379:6379 redis:7
 ```
 
+The service uses the same Redis connection for persistent storage and the
+cross-process message bus. Configure it with `REDIS_HOST`, `REDIS_PORT`,
+`REDIS_PASSWORD`, and `REDIS_DB`; omitted values default to
+`localhost:6379`, no password, and database `0`.
+
 Start the agent service:
 
 ```bash

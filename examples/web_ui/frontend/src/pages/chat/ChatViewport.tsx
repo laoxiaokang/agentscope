@@ -49,6 +49,7 @@ import {
 	DEFAULT_FRONTEND_PERMISSION_MODE,
 	resolveFrontendPermissionMode,
 } from '@/lib/permissionDefaults.ts';
+import { createUuid } from '@/utils/uuid';
 
 interface ChatViewportProps {
 	/**
@@ -665,7 +666,7 @@ export function ChatViewport({ agentId, sessionId, onTeamUpdated }: ChatViewport
 										const filePath = (file as File & { path?: string }).path;
 										if (filePath) {
 											return {
-												id: crypto.randomUUID(),
+												id: createUuid(),
 												type: 'data' as const,
 												source: {
 													type: 'url' as const,
@@ -679,7 +680,7 @@ export function ChatViewport({ agentId, sessionId, onTeamUpdated }: ChatViewport
 										if (file.type === 'text/plain') {
 											const text = await file.text();
 											return {
-												id: crypto.randomUUID(),
+												id: createUuid(),
 												type: 'text' as const,
 												text: `[File: ${file.name}]\n${text}`,
 											};
@@ -692,7 +693,7 @@ export function ChatViewport({ agentId, sessionId, onTeamUpdated }: ChatViewport
 										}
 										const base64 = btoa(binary);
 										return {
-											id: crypto.randomUUID(),
+											id: createUuid(),
 											type: 'data' as const,
 											source: {
 												type: 'base64' as const,

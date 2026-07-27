@@ -11,7 +11,7 @@ from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 
 from agentscope.app import create_app, SubAgentTemplate
-from agentscope.app.message_bus import InMemoryMessageBus
+from agentscope.app.message_bus import RedisMessageBus
 from agentscope.app.rag.blob_store import S3BlobStore
 from agentscope.app.rag.knowledge_base_manager import CollectionPerKbManager
 from agentscope.app.storage import RedisStorage
@@ -294,11 +294,22 @@ if _migrated_mcp_files:
         _migrated_mcp_files,
     )
 
+_REDIS_HOST = os.getenv("REDIS_HOST", "localhost")
+_REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+_REDIS_PASSWORD = os.getenv("REDIS_PASSWORD") or None
+_REDIS_DB = int(os.getenv("REDIS_DB", "0"))
+
 storage = RedisStorage(
-    host=os.getenv("REDIS_HOST", "localhost"),
-    port=int(os.getenv("REDIS_PORT", "6379")),
-    password=os.getenv("REDIS_PASSWORD") or None,
-    db=int(os.getenv("REDIS_DB", "0")),
+    host=_REDIS_HOST,
+    port=_REDIS_PORT,
+    password=_REDIS_PASSWORD,
+    db=_REDIS_DB,
+)
+message_bus = RedisMessageBus(
+    host=_REDIS_HOST,
+    port=_REDIS_PORT,
+    password=_REDIS_PASSWORD,
+    db=_REDIS_DB,
 )
 
 vector_store = _build_vector_store()
@@ -307,16 +318,7 @@ blob_store = _build_blob_store()
 app = create_app(
     storage=storage,
     blob_store=blob_store,
-    message_bus=InMemoryMessageBus(),
-    # -- To use a Redis-backed message bus instead (recommended for
-    # -- multi-process / production deployments), uncomment the lines
-    # -- below and replace the InMemoryMessageBus() above:
-    #
-    # from agentscope.app.message_bus import RedisMessageBus
-    # message_bus=RedisMessageBus(
-    #     host="localhost",
-    #     port=6379,
-    # ),
+    message_bus=message_bus,
     workspace_manager=LocalWorkspaceManager(
         basedir=str(_WORKSPACES_DIR),
         # The default MCP servers that will be added into the workspace

@@ -5,9 +5,9 @@
 # 2. Ensure both :local images exist on every Kubernetes node, or replace
 #    them with image names from a registry reachable by the cluster.
 # 3. Apply with: kubectl apply -f docker/k8s-deployment.yaml
-# 4. Local access:
-#      kubectl -n agentscope port-forward service/agentscope-web-ui 8080:80
-#      kubectl -n agentscope port-forward service/agentscope-agent-service 8000:8000
+# 4. Browser access through any reachable Kubernetes node:
+#      Web UI:       http://<node-ip>:30080
+#      Agent server: http://<node-ip>:30800
 
 apiVersion: v1
 kind: Namespace
@@ -25,12 +25,12 @@ data:
   REDIS_DB: "0"
   MILVUS_URI: "https://in03-27c7c2ecead182f.serverless.ali-cn-hangzhou.cloud.zilliz.com.cn"
   MILVUS_DB_NAME: "default"
-  S3_BUCKET: "change-me"
-  S3_ENDPOINT: ""
+  S3_BUCKET: "sc-dp"
+  S3_ENDPOINT: "http://eos.jinan-4.cmecloud.cn"
   S3_USE_SSL: "true"
   S3_ADDRESSING_STYLE: "auto"
   S3_SIGNATURE_VERSION: "s3v4"
-  AWS_REGION: "us-east-1"
+  AWS_REGION: "jinan4"
   PLAYWRIGHT_MCP_COMMAND: "playwright-mcp"
   PLAYWRIGHT_MCP_ARGS: "--headless --no-sandbox --executable-path /opt/playwright-browser/chrome"
 ---
@@ -41,22 +41,40 @@ metadata:
   namespace: agentscope
 type: Opaque
 stringData:
-  REDIS_PASSWORD: "change-me"
-  MILVUS_TOKEN: "change-me"
-  AWS_ACCESS_KEY_ID: ""
-  AWS_SECRET_ACCESS_KEY: ""
+  REDIS_PASSWORD: "sypm@123456"
+  MILVUS_TOKEN: "28bbb7654c0312052143ec2d339ffa7befbdcf73cf3c3042086bb08982ebefabd4b85237bfd90cc0b5ae0ec172eb214ab27a5c36"
+  AWS_ACCESS_KEY_ID: "B48Q40ZBTCMW6OVB3420"
+  AWS_SECRET_ACCESS_KEY: "ZsRxED20zNj5MsakLcKCPPekYCnnPDS8gLzICRGF"
   AWS_SESSION_TOKEN: ""
-  AMAP_API_KEY: ""
-  LUCKIN_MCP_TOKEN: ""
+  AMAP_API_KEY: "68715d61ee4ae56be37493c9e771d36b"
+  LUCKIN_MCP_TOKEN: "91c3aaf883dc4fefbcb9b3cd88a2307b5mcpLUCKIN_MCP_AI"
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: agentscope-workspaces-pv
+spec:
+  capacity:
+    storage: 10Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-storage
+  nfs:
+    server: 10.193.129.199
+    path: /3e138d6f-6c14-4a0d-8a5f-e7dbb27e1fcd/agentscope-workspaces
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: agentscope-workspaces
+  name: agentscope-workspaces-static
   namespace: agentscope
 spec:
+  storageClassName: nfs-storage
+  volumeName: agentscope-workspaces-pv
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 10Gi
@@ -87,7 +105,7 @@ spec:
         fsGroupChangePolicy: OnRootMismatch
       containers:
         - name: agent-service
-          image: agentscope-agent-service:local
+          image: 172.19.10.7:8888/agent/agentscope-agent-service:local
           imagePullPolicy: IfNotPresent
           envFrom:
             - configMapRef:
@@ -142,7 +160,7 @@ spec:
       volumes:
         - name: workspaces
           persistentVolumeClaim:
-            claimName: agentscope-workspaces
+            claimName: agentscope-workspaces-static
         - name: shared-memory
           emptyDir:
             medium: Memory
@@ -157,13 +175,14 @@ metadata:
     app.kubernetes.io/name: agentscope-agent-service
     app.kubernetes.io/part-of: agentscope
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app.kubernetes.io/name: agentscope-agent-service
   ports:
     - name: http
       port: 8000
       targetPort: http
+      nodePort: 31180
       protocol: TCP
 ---
 apiVersion: apps/v1
@@ -187,7 +206,7 @@ spec:
     spec:
       containers:
         - name: web-ui
-          image: agentscope-web-ui:local
+          image: 172.19.10.7:8888/agent/agentscope-web-ui:local
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -233,11 +252,12 @@ metadata:
     app.kubernetes.io/name: agentscope-web-ui
     app.kubernetes.io/part-of: agentscope
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app.kubernetes.io/name: agentscope-web-ui
   ports:
     - name: http
       port: 80
       targetPort: http
+      nodePort: 31280
       protocol: TCP

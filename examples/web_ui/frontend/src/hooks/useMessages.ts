@@ -16,6 +16,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { sessionApi } from '@/api';
 import { chatApi } from '@/api';
 import { useAudioManager } from '@/context/AudioContext';
+import { createUuid } from '@/utils/uuid';
 
 /**
  * One pending subagent HITL request, projected from a team *member*
@@ -319,7 +320,7 @@ export function useMessages(
 		async (content: ContentBlock[]) => {
 			if (!agentId || !sessionId) return;
 
-			const userMsg = UserMsg({ name: 'user', content });
+			const userMsg = UserMsg({ id: createUuid(), name: 'user', content });
 			msgsRef.current = [...msgsRef.current, userMsg];
 			scheduleUpdate();
 
@@ -361,7 +362,7 @@ export function useMessages(
 
 			const event: UserConfirmResultEvent = {
 				type: EventType.USER_CONFIRM_RESULT,
-				id: crypto.randomUUID(),
+				id: createUuid(),
 				created_at: new Date().toISOString(),
 				reply_id: replyId,
 				confirm_results: [
@@ -450,7 +451,7 @@ export function useMessages(
 
 			const event: UserConfirmResultEvent = {
 				type: EventType.USER_CONFIRM_RESULT,
-				id: crypto.randomUUID(),
+				id: createUuid(),
 				created_at: new Date().toISOString(),
 				reply_id: entry.reply_id, // worker's reply_id; backend maps it
 				confirm_results: [
