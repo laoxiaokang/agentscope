@@ -958,6 +958,49 @@ This skill is added through a tilde path.
         actual_skills = [asdict(skill) for skill in skills_sorted]
         self.assertListEqual(actual_skills, expected_skills)
 
+    async def test_list_skills_rebuilds_incomplete_index(self) -> None:
+        """An incomplete persisted index is rebuilt before listing skills."""
+        recovered_skill_dir = self._create_test_skill(
+            "recovered_skill",
+            "A skill recovered from an incomplete index",
+        )
+        aliased_skill_dir = self._create_test_skill(
+            "aliased_skill",
+            "A valid indexed skill whose alias must be preserved",
+        )
+        workspace = LocalWorkspace(
+            workdir=self.temp_dir.name,
+            skill_paths=[recovered_skill_dir, aliased_skill_dir],
+        )
+        await workspace.initialize()
+
+        skills_file = os.path.join(
+            self.temp_dir.name,
+            "skills",
+            ".skills",
+        )
+        async with aiofiles.open(skills_file, "r", encoding="utf-8") as f:
+            skills_data = json.loads(await f.read())
+        del skills_data["skills"]["recovered_skill"]["skill_name"]
+        skills_data["skills"]["aliased_skill"]["skill_name"] = "custom-alias"
+        async with aiofiles.open(skills_file, "w", encoding="utf-8") as f:
+            await f.write(json.dumps(skills_data))
+
+        restarted_workspace = LocalWorkspace(workdir=self.temp_dir.name)
+        await restarted_workspace.initialize()
+        skills = await restarted_workspace.list_skills()
+
+        self.assertSetEqual(
+            {skill.name for skill in skills},
+            {"recovered_skill", "custom-alias"},
+        )
+        async with aiofiles.open(skills_file, "r", encoding="utf-8") as f:
+            repaired_data = json.loads(await f.read())
+        self.assertEqual(
+            repaired_data["skills"]["recovered_skill"]["skill_name"],
+            "recovered_skill",
+        )
+
     async def test_list_skills_empty(self) -> None:
         """Test listing skills when no skills exist.
 

@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 """The cron scheduler manager class."""
+
 import json
 from collections.abc import Callable, Coroutine
+from datetime import datetime
 
 from typing import Self
+from zoneinfo import ZoneInfo
 
 from ....message import HintBlock
 from ....permission import PermissionContext
@@ -138,6 +141,10 @@ class SchedulerManager:
                 return
 
             try:
+                session_name = datetime.now(
+                    ZoneInfo(record.data.timezone),
+                ).strftime("%Y-%m-%d %H:%M:%S")
+
                 if record.data.stateful:
                     stateful_session_id = f"{record.id}_stateful"
                     logger.info(
@@ -165,6 +172,7 @@ class SchedulerManager:
                         )
                         session_config = SessionConfig(
                             workspace_id="",
+                            name=session_name,
                             chat_model_config=record.data.chat_model_config,
                         )
                         session = await storage.upsert_session(
@@ -200,6 +208,7 @@ class SchedulerManager:
                         agent_id=record.agent_id,
                         config=SessionConfig(
                             workspace_id="",
+                            name=session_name,
                             chat_model_config=record.data.chat_model_config,
                         ),
                         state=state,

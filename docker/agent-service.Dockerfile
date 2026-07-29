@@ -12,7 +12,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PATH=/opt/venv/bin:/opt/playwright-mcp/node_modules/.bin:$PATH \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1 \
-    PLAYWRIGHT_BROWSERS_PATH=/ms-playwright \
     PLAYWRIGHT_MCP_ARGS="" \
     PLAYWRIGHT_MCP_COMMAND=playwright-mcp \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -24,11 +23,22 @@ RUN sed -i \
         /etc/apt/sources.list.d/debian.sources \
     && apt-get update \
     && apt-get install --no-install-recommends -y \
+        bash \
         ca-certificates \
+        chromium \
+        curl \
+        fonts-liberation \
+        fonts-noto-color-emoji \
+        fonts-wqy-zenhei \
+        git \
+        jq \
         python3 \
         python3-pip \
         python3-venv \
         ripgrep \
+        unzip \
+        wget \
+        zip \
     && python3 -m venv /opt/venv \
     && /opt/venv/bin/pip install --upgrade pip setuptools wheel \
     && rm -rf /var/lib/apt/lists/*
@@ -37,10 +47,8 @@ WORKDIR /opt/playwright-mcp
 RUN npm install --no-audit --no-fund \
         --registry="${NPM_REGISTRY}" \
         "@playwright/mcp@${PLAYWRIGHT_MCP_VERSION}" \
-    && npx playwright install --with-deps chromium \
     && npm cache clean --force \
-    && chown -R node:node /opt/playwright-mcp /ms-playwright \
-    && rm -rf /var/lib/apt/lists/*
+    && chown -R node:node /opt/playwright-mcp
 
 WORKDIR /app
 COPY pyproject.toml README.md LICENSE ./
@@ -48,13 +56,9 @@ COPY src ./src
 RUN pip install ".[service,storage,milvuslite]"
 RUN pip install "aioboto3==${AIOBOTO3_VERSION}"
 
-RUN chromium_path="$(find /ms-playwright -type f \
-        \( -path '*/chrome-linux/chrome' \
-        -o -path '*/chrome-linux64/chrome' \) \
-        | head -n 1)" \
-    && test -n "${chromium_path}" \
+RUN test -x /usr/bin/chromium \
     && mkdir -p /opt/playwright-browser \
-    && ln -s "${chromium_path}" /opt/playwright-browser/chrome
+    && ln -s /usr/bin/chromium /opt/playwright-browser/chrome
 
 ENV PLAYWRIGHT_MCP_ARGS="--headless --no-sandbox --executable-path /opt/playwright-browser/chrome"
 
@@ -62,6 +66,10 @@ COPY --chown=node:node examples/agent_service ./examples/agent_service
 RUN mkdir -p \
         /app/examples/agent_service/workspaces \
     && chown -R node:node /app/examples/agent_service
+
+# AgentScope executes workspace commands through /bin/sh. Use Bash at runtime
+# so skill installers can use Bash-only syntax such as process substitution.
+RUN ln -sfT /bin/bash /bin/sh
 
 USER node
 WORKDIR /app/examples/agent_service

@@ -311,13 +311,66 @@ class LocalWorkspace(WorkspaceBase):
         try:
             raw = await self._backend.read_file(path)
             data = json.loads(raw.decode("utf-8"))
-            return _SkillsFile(
+            raw_skills = data.get("skills", {})
+            if not isinstance(raw_skills, dict):
+                raise ValueError("'skills' must be an object")
+
+            skills: dict[str, _SkillEntry] = {}
+            invalid_entries: list[str] = []
+            for dir_name, entry in raw_skills.items():
+                if not isinstance(dir_name, str) or not isinstance(
+                    entry,
+                    dict,
+                ):
+                    invalid_entries.append(str(dir_name))
+                    continue
+
+                skill_hash = entry.get("hash")
+                skill_name = entry.get("skill_name")
+                if not isinstance(skill_hash, str) or not skill_hash:
+                    invalid_entries.append(dir_name)
+                    continue
+                if not isinstance(skill_name, str) or not skill_name:
+                    invalid_entries.append(dir_name)
+                    continue
+
+                skills[dir_name] = {
+                    "hash": skill_hash,
+                    "skill_name": skill_name,
+                }
+
+            skills_file = _SkillsFile(
                 skills_dir_mtime=float(data.get("skills_dir_mtime", 0.0)),
-                skills=data.get("skills", {}),
+                skills=skills,
+            )
+            if not invalid_entries:
+                return skills_file
+
+            logger.warning(
+                "Invalid entries in %s for skill directories %s. "
+                "Rebuilding those entries.",
+                path,
+                ", ".join(repr(name) for name in invalid_entries),
+            )
+            skills_file["skills_dir_mtime"] = -1.0
+            current_mtime = await self._backend.stat_mtime(skills_dir)
+            return await self._reconcile_skills_dir(
+                skills_dir,
+                skills_file,
+                current_mtime if current_mtime is not None else 0.0,
             )
         except Exception as e:
-            logger.warning("Failed to load .skills from %s: %s", path, str(e))
-            return {"skills_dir_mtime": 0.0, "skills": {}}
+            logger.warning(
+                "Failed to load .skills from %s: %s. Rebuilding the index.",
+                path,
+                str(e),
+            )
+            current_mtime = await self._backend.stat_mtime(skills_dir)
+            return await self._reconcile_skills_dir(
+                skills_dir,
+                {"skills_dir_mtime": -1.0, "skills": {}},
+                current_mtime if current_mtime is not None else 0.0,
+            )
 
     async def _save_skills_file(
         self,
@@ -579,7 +632,7 @@ class LocalWorkspace(WorkspaceBase):
         }
         existing_hashes: set[str] = {e["hash"] for e in existing.values()}
 
-        for new_dir in actual_dirs - indexed_dirs:
+        for new_dir in sorted(actual_dirs - indexed_dirs):
             skill_path = os.path.join(skills_dir, new_dir)
             result = await self._validate_and_hash_skill(skill_path)
             if result is None:

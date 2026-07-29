@@ -90,7 +90,7 @@ docker build -f docker/agent-service.Dockerfile -t agentscope-agent-service:loca
 docker build -f docker/web-ui.Dockerfile -t agentscope-web-ui:local .
 ```
 
-Agent Service 镜像包含 Python 3.11、Node.js 22、Playwright MCP 和 Chromium，因此首次构建下载量较大。Playwright MCP 默认固定为 `0.0.78`；需要升级时可传入构建参数：
+Agent Service 镜像包含 Python 3.11、Node.js 22、Playwright MCP 和系统 Chromium，因此首次构建下载量较大。Chromium 通过 Debian 软件源安装，构建和容器运行时均不再从 `cdn.playwright.dev` 下载浏览器。Playwright MCP 默认固定为 `0.0.78`；需要升级时可传入构建参数：
 
 ```powershell
 docker build --build-arg PLAYWRIGHT_MCP_VERSION=0.0.78 -f docker/agent-service.Dockerfile -t agentscope-agent-service:local .
@@ -107,6 +107,38 @@ docker build `
   -f docker/agent-service.Dockerfile `
   -t agentscope-agent-service:local .
 ```
+
+## 构建、推送并更新 Kubernetes
+
+使用不可变的新标签构建 Agent Service 镜像，避免 Kubernetes 在 `imagePullPolicy: IfNotPresent` 下继续使用节点中缓存的旧镜像：
+
+```powershell
+docker build `
+  --build-arg DEBIAN_MIRROR=http://mirrors.aliyun.com/debian `
+  --build-arg DEBIAN_SECURITY_MIRROR=http://mirrors.aliyun.com/debian-security `
+  --build-arg NPM_REGISTRY=https://registry.npmmirror.com `
+  --build-arg PIP_INDEX_URL=https://mirrors.aliyun.com/pypi/simple `
+  -f docker/agent-service.Dockerfile `
+  -t 172.19.10.7:8888/agent/agentscope-agent-service:skill-tools-20260727 .
+
+docker push 172.19.10.7:8888/agent/agentscope-agent-service:skill-tools-20260727
+
+kubectl -n agentscope set image deployment/agentscope-agent-service `
+  agent-service=172.19.10.7:8888/agent/agentscope-agent-service:skill-tools-20260727
+
+kubectl -n agentscope rollout status deployment/agentscope-agent-service
+```
+
+同时将 `docker/k8s-deployment.yaml` 中 Agent Service 的 `image` 修改为相同标签，避免后续重新执行 `kubectl apply` 时恢复旧镜像。
+
+部署完成后验证 Skill 安装工具、运行用户、Bash、Chromium 和 Playwright MCP：
+
+```powershell
+kubectl -n agentscope exec deployment/agentscope-agent-service -- `
+  bash -lc "id -u && curl --version && git --version && jq --version && chromium --version && playwright-mcp --version && cat <(printf shell-ok)"
+```
+
+预期 `id -u` 输出 `1000`，最后输出 `shell-ok`。首次构建需要从 Debian 软件源下载 Chromium 及其依赖，耗时取决于镜像源速度；该层成功后会由 Docker 缓存。
 
 ## 停止、重启与清理
 

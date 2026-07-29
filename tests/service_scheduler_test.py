@@ -14,10 +14,12 @@ In stateful mode the session id is deterministic (``{record_id}_stateful``)
 and reused across fires; in non-stateful mode a fresh session id is
 created every fire.
 """
+
 import json
 from contextlib import AsyncExitStack
 from datetime import datetime
 from unittest import IsolatedAsyncioTestCase
+from zoneinfo import ZoneInfo
 
 import fakeredis.aioredis
 
@@ -76,6 +78,7 @@ def _make_record(
     enabled: bool = True,
     stateful: bool = False,
     description: str = "run nightly summary",
+    timezone: str = "UTC",
 ) -> ScheduleRecord:
     """Build a minimal :class:`ScheduleRecord` for the trigger test."""
     return ScheduleRecord(
@@ -85,6 +88,7 @@ def _make_record(
             name="sched-a",
             description=description,
             enabled=enabled,
+            timezone=timezone,
             cron_expression="0 0 * * *",
             started_at=datetime(2025, 1, 1),
             chat_model_config=ChatModelConfig(
@@ -183,6 +187,43 @@ class TestSchedulerFireDelivery(_SchedulerFireTestBase):
                 "input": None,
             },
         )
+
+    async def test_session_names_use_schedule_timezone(self) -> None:
+        """Scheduled sessions are named in the schedule's timezone."""
+        timezone = "Asia/Shanghai"
+
+        for stateful in (False, True):
+            with self.subTest(stateful=stateful):
+                record = _make_record(
+                    stateful=stateful,
+                    timezone=timezone,
+                )
+                before = datetime.now(ZoneInfo(timezone)).replace(
+                    microsecond=0,
+                    tzinfo=None,
+                )
+
+                await self.manager._build_trigger(record)()
+
+                after = datetime.now(ZoneInfo(timezone)).replace(
+                    microsecond=0,
+                    tzinfo=None,
+                )
+                sessions = await self.storage.list_sessions(
+                    record.user_id,
+                    record.agent_id,
+                )
+                session = next(
+                    item
+                    for item in sessions
+                    if item.source_schedule_id == record.id
+                )
+                session_time = datetime.strptime(
+                    session.config.name,
+                    "%Y-%m-%d %H:%M:%S",
+                )
+                self.assertGreaterEqual(session_time, before)
+                self.assertLessEqual(session_time, after)
 
 
 class TestSchedulerFireDisabled(_SchedulerFireTestBase):
