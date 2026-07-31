@@ -4,7 +4,7 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
-		"test": "node --test tests/frontendPermissionDefault.test.ts tests/uuid.test.ts",
+		"test": "node --test tests/frontendPermissionDefault.test.ts tests/uuid.test.ts tests/sessionDisplayName.test.ts",
 		"dev": "vite",
 		"build": "tsc -b && vite build",
 		"lint": "eslint .",

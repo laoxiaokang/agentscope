@@ -12,6 +12,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import { ChatViewport } from './ChatViewport';
+import { getSessionDisplayName } from './session-display-name';
 import type { SessionRecord } from '@/api';
 import { AgentDialog } from '@/components/dialog/AgentDialog';
 import { DeleteDialog } from '@/components/dialog/DeleteDialog';
@@ -193,6 +194,8 @@ const ChatPageInner = () => {
 		await updateSession(renameSession.id, { name });
 	};
 
+	const getDisplayName = (session: SessionRecord) => getSessionDisplayName(session);
+
 	return (
 		<div className="flex h-full w-full">
 			{/*
@@ -307,7 +310,7 @@ const ChatPageInner = () => {
 															<BotMessageSquare />
 														))}
 													<span className="truncate">
-														{session.config.name || session.id}
+														{getDisplayName(session)}
 													</span>
 												</SidebarMenuButton>
 												<SidebarMenuAction showOnHover>
@@ -395,7 +398,7 @@ const ChatPageInner = () => {
 			<RenameSessionDialog
 				open={renameOpen}
 				onOpenChange={setRenameOpen}
-				currentName={renameSession?.config.name ?? renameSession?.id ?? ''}
+				currentName={renameSession ? getDisplayName(renameSession) : ''}
 				onConfirm={handleRenameConfirm}
 			/>
 			<DeleteDialog
@@ -403,7 +406,7 @@ const ChatPageInner = () => {
 				onOpenChange={setDeleteSessionOpen}
 				title={t('common.deleteTitle', {
 					entity: t('dialog-session-delete.entity'),
-					name: sessionToDelete?.config.name || sessionToDelete?.id || '',
+					name: sessionToDelete ? getDisplayName(sessionToDelete) : '',
 				})}
 				description={t('common.deleteDescription')}
 				confirmLabel={t('dialog-session-delete.confirm')}
