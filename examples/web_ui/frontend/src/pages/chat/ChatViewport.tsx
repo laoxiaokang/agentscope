@@ -177,10 +177,12 @@ export function ChatViewport({ agentId, sessionId, onTeamUpdated }: ChatViewport
 		mcps,
 		loading: mcpsLoading,
 		addMcps,
+		addMcpsFromLibrary,
 		removeMcp,
 		skills,
 		skillsLoading,
-		addSkill,
+		uploadSkill,
+		addSkillsFromLibrary,
 		removeSkill,
 	} = useWorkspace(agentId, sessionId);
 	const { knowledgeBases, loading: knowledgeBasesLoading } = useKnowledgeBases();
@@ -245,6 +247,7 @@ export function ChatViewport({ agentId, sessionId, onTeamUpdated }: ChatViewport
 						mcps={mcps}
 						loading={mcpsLoading}
 						onAdd={addMcps}
+						onAddFromLibrary={addMcpsFromLibrary}
 						onRemove={removeMcp}
 					/>
 				),
@@ -256,7 +259,8 @@ export function ChatViewport({ agentId, sessionId, onTeamUpdated }: ChatViewport
 					<SkillPanel
 						skills={skills}
 						loading={skillsLoading}
-						onAdd={addSkill}
+						onUpload={uploadSkill}
+						onAddFromLibrary={addSkillsFromLibrary}
 						onRemove={removeSkill}
 					/>
 				),
@@ -312,10 +316,12 @@ export function ChatViewport({ agentId, sessionId, onTeamUpdated }: ChatViewport
 			mcps,
 			mcpsLoading,
 			addMcps,
+			addMcpsFromLibrary,
 			removeMcp,
 			skills,
 			skillsLoading,
-			addSkill,
+			uploadSkill,
+			addSkillsFromLibrary,
 			removeSkill,
 			permissionContext,
 			knowledgeBases,
